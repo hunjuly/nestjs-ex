@@ -1,7 +1,7 @@
 {
     "folders": [
         {
-            "path": ".",
+            "path": "."
         }
     ],
     "extensions": {
@@ -22,7 +22,7 @@
             "**/bower_components": true,
             "**/output": true,
             "**/.next": true,
-            "**/dist": true,
+            "**/dist": true
         },
         "files.exclude": {
             "**/node_modules": true,
@@ -46,7 +46,7 @@
             "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "[jsonc]": {
-            "editor.defaultFormatter": "vscode.json-language-features"
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
         "[dockerfile]": {
             "editor.defaultFormatter": "ms-azuretools.vscode-docker"
