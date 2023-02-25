@@ -8,7 +8,7 @@
     "scripts": {
         "build": "nest build",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-        "start": "rimraf dist && nest start --debug --watch",
+        "start": "nest start --debug --watch",
         "start:prod": "node dist/main",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "jest --watch --onlyChanged",
@@ -25,6 +25,7 @@
         "@nestjs/cli": "^9.0.0",
         "@nestjs/schematics": "^9.0.0",
         "@nestjs/testing": "^9.0.0",
+        "@trivago/prettier-plugin-sort-imports": "^4.1.1",
         "@types/express": "^4.17.13",
         "@types/jest": "29.2.4",
         "@types/node": "18.11.18",

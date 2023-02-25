@@ -12,7 +12,7 @@ module.exports = {
         node: true,
         jest: true
     },
-    ignorePatterns: ['.eslintrc.js', 'jest.config.ts', 'jest.setup.ts'],
+    ignorePatterns: ['.eslintrc.js', 'jest.config.ts', 'jest.setup.ts','docs','_backup2/**/*'],
     rules: {
         '@typescript-eslint/interface-name-prefix': 'off',
         '@typescript-eslint/explicit-function-return-type': 'off',
