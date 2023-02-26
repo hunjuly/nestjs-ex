@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { Seed } from './entities/seed.entity'
-import { SeedsRepository } from './repositories'
 import { SeedsController } from './seeds.controller'
+import { SeedsRepository } from './seeds.repository'
 import { SeedsService } from './seeds.service'
 
 @Module({

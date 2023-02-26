@@ -1,30 +1,50 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { CreateSeedDto } from './dto/create-seed.dto'
 import { UpdateSeedDto } from './dto/update-seed.dto'
 import { Seed } from './entities'
-import { SeedsRepository } from './repositories'
+import { SeedsRepository } from './seeds.repository'
 
 @Injectable()
 export class SeedsService {
-    constructor(private seedsRepository: SeedsRepository) {}
+    constructor(private repository: SeedsRepository) {}
 
     async create(createSeedDto: CreateSeedDto): Promise<Seed> {
-        return await this.seedsRepository.create(createSeedDto)
+        const newSeed = this.repository.create(createSeedDto)
+        return this.repository.save(newSeed)
     }
 
     async findAll(): Promise<Seed[]> {
-        return await this.seedsRepository.findAll()
+        return this.repository.find()
     }
 
     async findOne(id: number): Promise<Seed> {
-        return await this.seedsRepository.findOne(id)
+        const seed = await this.repository.findOneBy({ id })
+        if (!seed) {
+            throw new NotFoundException(`Seed with ID ${id} not found`)
+        }
+        return seed
     }
 
     async update(id: number, updateSeedDto: UpdateSeedDto): Promise<Seed> {
-        return await this.seedsRepository.update(id, updateSeedDto)
+        const seed = await this.repository.findOneBy({ id })
+
+        if (!seed) {
+            throw new NotFoundException(`Seed with ID ${id} not found`)
+        }
+
+        const newSeed = this.repository.create(updateSeedDto)
+        const updatedSeed = Object.assign(seed, newSeed)
+
+        return this.repository.save(updatedSeed)
     }
 
     async remove(id: number): Promise<void> {
-        return await this.seedsRepository.remove(id)
+        const seedExists = await this.repository.exist({ where: { id } })
+
+        if (!seedExists) {
+            throw new NotFoundException(`Seed with ID ${id} not found`)
+        }
+
+        await this.repository.delete(id)
     }
 }

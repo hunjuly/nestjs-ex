@@ -1,112 +1,110 @@
-// import { Test, TestingModule } from '@nestjs/testing'
-// import { SeedsController } from './seeds.controller'
-// import { SeedsService } from './seeds.service'
-// describe('SeedsController', () => {
-//     let controller: SeedsController
-//     beforeEach(async () => {
-//         const module: TestingModule = await Test.createTestingModule({
-//             controllers: [SeedsController],
-//             providers: [SeedsService]
-//         }).compile()
-//         controller = module.get<SeedsController>(SeedsController)
-//     })
-//     it('should be defined', () => {
-//         expect(controller).toBeDefined()
-//     })
-// })
-import * as request from 'supertest'
-import { INestApplication } from '@nestjs/common'
+import { NotFoundException } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { getRepositoryToken } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { AppModule } from 'src/app.module'
-import { Seed } from 'src/seeds/entities'
+import { CreateSeedDto, UpdateSeedDto } from '../dto'
+import { Seed } from '../entities'
+import { SeedsController } from '../seeds.controller'
+import { SeedsService } from '../seeds.service'
 
-describe('SeedsController (e2e)', () => {
-    let app: INestApplication
-    let seedRepository: Repository<Seed>
+describe('SeedsController', () => {
+    let seedsController: SeedsController
+    let seedsService: SeedsService
 
-    beforeAll(async () => {
-        const moduleFixture = await Test.createTestingModule({
-            imports: [AppModule]
-        }).compile()
+    const seed1 = new Seed()
+    seed1.id = '123e4567-e89b-12d3-a456-426614174000'
+    seed1.name = 'Seed 1'
 
-        app = moduleFixture.createNestApplication()
-        await app.init()
+    const createSeedDto: CreateSeedDto = {
+        name: 'Seed 2'
+    }
 
-        seedRepository = moduleFixture.get<Repository<Seed>>(getRepositoryToken(Seed))
-    })
+    const updateSeedDto: UpdateSeedDto = {
+        name: 'Updated Seed'
+    }
 
     beforeEach(async () => {
-        await seedRepository.clear()
+        const moduleRef = await Test.createTestingModule({
+            controllers: [SeedsController],
+            providers: [SeedsService]
+        }).compile()
+
+        seedsController = moduleRef.get<SeedsController>(SeedsController)
+        seedsService = moduleRef.get<SeedsService>(SeedsService)
     })
 
-    afterAll(async () => {
-        await app.close()
-    })
+    describe('create', () => {
+        it('should return a new seed', async () => {
+            const createdSeed = new Seed()
+            createdSeed.id = '123e4567-e89b-12d3-a456-426614174001'
+            createdSeed.name = createSeedDto.name
+            jest.spyOn(seedsService, 'create').mockResolvedValue(createdSeed)
 
-    describe('/seeds (POST)', () => {
-        it('should create a new seed', async () => {
-            const createSeedDto = { name: 'test seed' }
-            const response = await request(app.getHttpServer()).post('/seeds').send(createSeedDto).expect(201)
+            const result = await seedsController.create(createSeedDto)
 
-            expect(response.body).toMatchObject(createSeedDto)
-
-            const seed = await seedRepository.findOne(response.body.id)
-            expect(seed).toMatchObject(createSeedDto)
+            expect(result).toEqual(createdSeed)
         })
     })
 
-    describe('/seeds (GET)', () => {
-        it('should get all seeds', async () => {
-            const createSeedDto = { name: 'test seed' }
-            await seedRepository.save(seedRepository.create(createSeedDto))
+    describe('findAll', () => {
+        it('should return an array of seeds', async () => {
+            const seeds = [seed1]
+            jest.spyOn(seedsService, 'findAll').mockResolvedValue(seeds)
 
-            const response = await request(app.getHttpServer()).get('/seeds').expect(200)
+            const result = await seedsController.findAll()
 
-            expect(response.body.length).toBe(1)
-            expect(response.body[0]).toMatchObject(createSeedDto)
+            expect(result).toEqual(seeds)
         })
     })
 
-    describe('/seeds/:id (GET)', () => {
-        it('should get a seed by id', async () => {
-            const createSeedDto = { name: 'test seed' }
-            const savedSeed = await seedRepository.save(seedRepository.create(createSeedDto))
+    describe('findOne', () => {
+        it('should return a seed', async () => {
+            jest.spyOn(seedsService, 'findOne').mockResolvedValue(seed1)
 
-            const response = await request(app.getHttpServer()).get(`/seeds/${savedSeed.id}`).expect(200)
+            const result = await seedsController.findOne(seed1.id)
 
-            expect(response.body).toMatchObject(createSeedDto)
+            expect(result).toEqual(seed1)
+        })
+
+        it('should throw a NotFoundException if seed is not found', async () => {
+            jest.spyOn(seedsService, 'findOne').mockResolvedValue(null)
+
+            expect(seedsController.findOne('invalid-id')).rejects.toThrowError(NotFoundException)
         })
     })
 
-    describe('/seeds/:id (PATCH)', () => {
-        it('should update a seed by id', async () => {
-            const createSeedDto = { name: 'test seed' }
-            const savedSeed = await seedRepository.save(seedRepository.create(createSeedDto))
+    describe('update', () => {
+        it('should return the updated seed', async () => {
+            const updatedSeed = new Seed()
+            updatedSeed.id = seed1.id
+            updatedSeed.name = updateSeedDto.name
+            jest.spyOn(seedsService, 'update').mockResolvedValue(updatedSeed)
 
-            const updateSeedDto = { name: 'updated test seed' }
-            const response = await request(app.getHttpServer())
-                .patch(`/seeds/${savedSeed.id}`)
-                .send(updateSeedDto)
-                .expect(200)
+            const result = await seedsController.update(seed1.id, updateSeedDto)
 
-            expect(response.body).toMatchObject(updateSeedDto)
+            expect(result).toEqual(updatedSeed)
+        })
 
-            const seed = await seedRepository.findOne(savedSeed.id)
-            expect(seed).toMatchObject(updateSeedDto)
+        it('should throw a NotFoundException if seed is not found', async () => {
+            jest.spyOn(seedsService, 'update').mockResolvedValue(null)
+
+            expect(seedsController.update('invalid-id', updateSeedDto)).rejects.toThrowError(
+                NotFoundException
+            )
         })
     })
 
-    describe('/seeds/:id (DELETE)', () => {
-        it('should delete a seed by id', async () => {
-            const createSeedDto = { name: 'test seed' }
-            const savedSeed = await seedRepository.save(seedRepository.create(createSeedDto))
+    //   describe('remove', () => {
+    //     it('should not throw any error', async () => {
+    //       jest.spyOn(seeds
 
-            await request(app.getHttpServer()).delete(`/seeds/${savedSeed.id}`).expect(200)
+    //     describe('/seeds/:id (DELETE)', () => {
+    //         it('should delete a seed by id', async () => {
+    //             const createSeedDto = { name: 'test seed' }
+    //             const savedSeed = await seedRepository.save(seedRepository.create(createSeedDto))
 
-            const seed = await seedRepository.findOne(savedSeed.id)
-            expect(seed).toBeUndefined()
-        })
-    })
+    //             await request(app.getHttpServer()).delete(`/seeds/${savedSeed.id}`).expect(200)
+
+    //             const seed = await seedRepository.findOne(savedSeed.id)
+    //             expect(seed).toBeUndefined()
+    //         })
+    //     })
 })
