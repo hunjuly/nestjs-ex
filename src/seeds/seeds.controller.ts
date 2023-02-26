@@ -18,17 +18,17 @@ export class SeedsController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.seedsService.findOne(+id)
+    findById(@Param('id') id: string) {
+        return this.seedsService.findById(id)
     }
 
     @Patch(':id')
     update(@Param('id') id: string, @Body() updateSeedDto: UpdateSeedDto) {
-        return this.seedsService.update(+id, updateSeedDto)
+        return this.seedsService.update(id, updateSeedDto)
     }
 
     @Delete(':id')
     remove(@Param('id') id: string) {
-        return this.seedsService.remove(+id)
+        return this.seedsService.remove(id)
     }
 }

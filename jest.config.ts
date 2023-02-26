@@ -17,3 +17,5 @@ const config: Config.InitialOptions = {
     coveragePathIgnorePatterns: ['__tests__'],
     coverageDirectory: './coverage'
 }
+
+export default config

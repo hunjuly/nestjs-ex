@@ -1,110 +1,117 @@
-import { NotFoundException } from '@nestjs/common'
-import { Test } from '@nestjs/testing'
-import { CreateSeedDto, UpdateSeedDto } from '../dto'
-import { Seed } from '../entities'
-import { SeedsController } from '../seeds.controller'
-import { SeedsService } from '../seeds.service'
+import * as request from 'supertest'
+import { INestApplication } from '@nestjs/common'
+import { Test, TestingModule } from '@nestjs/testing'
+import { AppModule } from 'src/app.module'
 
-describe('SeedsController', () => {
-    let seedsController: SeedsController
-    let seedsService: SeedsService
+// e2e는 순차적으로 실행이 맞다
+describe('SeedsController (e2e)', () => {
+    let app: INestApplication
 
-    const seed1 = new Seed()
-    seed1.id = '123e4567-e89b-12d3-a456-426614174000'
-    seed1.name = 'Seed 1'
-
-    const createSeedDto: CreateSeedDto = {
-        name: 'Seed 2'
-    }
-
-    const updateSeedDto: UpdateSeedDto = {
-        name: 'Updated Seed'
-    }
-
-    beforeEach(async () => {
-        const moduleRef = await Test.createTestingModule({
-            controllers: [SeedsController],
-            providers: [SeedsService]
+    beforeAll(async () => {
+        const moduleFixture: TestingModule = await Test.createTestingModule({
+            imports: [AppModule]
         }).compile()
 
-        seedsController = moduleRef.get<SeedsController>(SeedsController)
-        seedsService = moduleRef.get<SeedsService>(SeedsService)
+        app = moduleFixture.createNestApplication()
+        await app.init()
     })
 
-    describe('create', () => {
-        it('should return a new seed', async () => {
-            const createdSeed = new Seed()
-            createdSeed.id = '123e4567-e89b-12d3-a456-426614174001'
-            createdSeed.name = createSeedDto.name
-            jest.spyOn(seedsService, 'create').mockResolvedValue(createdSeed)
-
-            const result = await seedsController.create(createSeedDto)
-
-            expect(result).toEqual(createdSeed)
-        })
+    afterAll(async () => {
+        await app.close()
     })
 
-    describe('findAll', () => {
-        it('should return an array of seeds', async () => {
-            const seeds = [seed1]
-            jest.spyOn(seedsService, 'findAll').mockResolvedValue(seeds)
+    let seedId: string
 
-            const result = await seedsController.findAll()
-
-            expect(result).toEqual(seeds)
-        })
+    it('/seeds (POST)', () => {
+        return request(app.getHttpServer())
+            .post('/seeds')
+            .send({
+                name: 'Seed 1'
+            })
+            .expect(201)
+            .expect((res) => {
+                expect(res.body.id).toBeDefined()
+                expect(res.body.name).toEqual('Seed 1')
+            })
     })
 
-    describe('findOne', () => {
-        it('should return a seed', async () => {
-            jest.spyOn(seedsService, 'findOne').mockResolvedValue(seed1)
-
-            const result = await seedsController.findOne(seed1.id)
-
-            expect(result).toEqual(seed1)
-        })
-
-        it('should throw a NotFoundException if seed is not found', async () => {
-            jest.spyOn(seedsService, 'findOne').mockResolvedValue(null)
-
-            expect(seedsController.findOne('invalid-id')).rejects.toThrowError(NotFoundException)
-        })
+    it('/seeds (GET)', () => {
+        return request(app.getHttpServer())
+            .get('/seeds')
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.length).toBeGreaterThan(0)
+            })
     })
 
-    describe('update', () => {
-        it('should return the updated seed', async () => {
-            const updatedSeed = new Seed()
-            updatedSeed.id = seed1.id
-            updatedSeed.name = updateSeedDto.name
-            jest.spyOn(seedsService, 'update').mockResolvedValue(updatedSeed)
-
-            const result = await seedsController.update(seed1.id, updateSeedDto)
-
-            expect(result).toEqual(updatedSeed)
-        })
-
-        it('should throw a NotFoundException if seed is not found', async () => {
-            jest.spyOn(seedsService, 'update').mockResolvedValue(null)
-
-            expect(seedsController.update('invalid-id', updateSeedDto)).rejects.toThrowError(
-                NotFoundException
-            )
-        })
+    it('/seeds/:id (GET)', () => {
+        return request(app.getHttpServer())
+            .get(`/seeds/${seedId}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.id).toEqual(seedId)
+                expect(res.body.name).toBeDefined()
+            })
     })
 
-    //   describe('remove', () => {
-    //     it('should not throw any error', async () => {
-    //       jest.spyOn(seeds
-
-    //     describe('/seeds/:id (DELETE)', () => {
-    //         it('should delete a seed by id', async () => {
-    //             const createSeedDto = { name: 'test seed' }
-    //             const savedSeed = await seedRepository.save(seedRepository.create(createSeedDto))
-
-    //             await request(app.getHttpServer()).delete(`/seeds/${savedSeed.id}`).expect(200)
-
-    //             const seed = await seedRepository.findOne(savedSeed.id)
-    //             expect(seed).toBeUndefined()
+    // it('/seeds/:id (GET)', () => {
+    //     return request(app.getHttpServer())
+    //         .get('/seeds/1')
+    //         .expect(200)
+    //         .expect((res) => {
+    //             expect(res.body.id).toEqual(1)
+    //             expect(res.body.name).toBeDefined()
     //         })
-    //     })
+    // })
+
+    it('/seeds/:id (GET - Not Found)', () => {
+        return request(app.getHttpServer()).get('/seeds/999').expect(404)
+    })
+
+    // it('/seeds/:id (PATCH)', () => {
+    //     return request(app.getHttpServer())
+    //         .patch('/seeds/1')
+    //         .send({
+    //             name: 'Updated Seed'
+    //         })
+    //         .expect(200)
+    //         .expect((res) => {
+    //             expect(res.body.id).toEqual(1)
+    //             expect(res.body.name).toEqual('Updated Seed')
+    //         })
+    // })
+
+    it('/seeds/:id (PATCH)', () => {
+        return request(app.getHttpServer())
+            .patch(`/seeds/${seedId}`)
+            .send({
+                name: 'Updated Seed'
+            })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.id).toEqual(seedId)
+                expect(res.body.name).toEqual('Updated Seed')
+            })
+    })
+
+    it('/seeds/:id (PATCH - Not Found)', () => {
+        return request(app.getHttpServer())
+            .patch('/seeds/999')
+            .send({
+                name: 'Updated Seed'
+            })
+            .expect(404)
+    })
+
+    it('/seeds/:id (DELETE)', () => {
+        return request(app.getHttpServer()).delete(`/seeds/${seedId}`).expect(204)
+    })
+
+    // it('/seeds/:id (DELETE)', () => {
+    //     return request(app.getHttpServer()).delete('/seeds/1').expect(204)
+    // })
+
+    it('/seeds/:id (DELETE - Not Found)', () => {
+        return request(app.getHttpServer()).delete('/seeds/999').expect(404)
+    })
 })
