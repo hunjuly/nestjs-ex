@@ -9,5 +9,5 @@
     "importOrderSortSpecifiers": true,
     "importOrderGroupNamespaceSpecifiers": true,
     "importOrderCaseInsensitive": true,
-    "importOrderParserPlugins": ["typescript", "decorators"]
+    "importOrderParserPlugins": ["typescript", "decorators-legacy"]
 }
