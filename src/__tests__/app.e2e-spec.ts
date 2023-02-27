@@ -1,7 +1,7 @@
 import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import { AppModule } from './../src/app.module'
+import { AppModule } from 'src/app.module'
 
 /*
 End-to-end 테스트는 전체 시스템이 아닌 특정한 기능이나 모듈의 동작을 테스트하는 단위 테스트와는 다르게,
@@ -23,6 +23,10 @@ describe('AppController (e2e)', () => {
 
         app = moduleFixture.createNestApplication()
         await app.init()
+    })
+
+    beforeEach(async () => {
+        await app.close()
     })
 
     it('/ (GET)', () => {

@@ -5,7 +5,7 @@ const config: Config.InitialOptions = {
     moduleFileExtensions: ['js', 'json', 'ts'],
     rootDir: '.',
     roots: ['<rootDir>/src/'],
-    testRegex: '.*\\.spec\\.ts$',
+    testRegex: '.*\\.(spec|e2e-spec)\\.ts$',
     moduleNameMapper: {
         '^src/(.*)$': '<rootDir>/src/$1'
     },
