@@ -49,3 +49,21 @@ describe('common/utils', () => {
         })
     })
 })
+
+export class SeedDto {
+    id: string
+    name: string
+}
+
+it('aa', () => {
+    const seed = new SeedDto()
+    const updatedObject = Object.keys(seed)
+
+    console.log(updatedObject, seed)
+    // .reduce((updated, key) => {
+    //     if (key in obj1) {
+    //         updated[key as keyof T] = obj2[key]
+    //     }
+    //     return updated
+    // }, obj1)
+})

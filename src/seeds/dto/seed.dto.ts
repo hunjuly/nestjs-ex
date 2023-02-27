@@ -1,4 +1,4 @@
-export class SeedDto {
-    readonly id: string
-    readonly name: string
+export interface SeedDto {
+    id: string
+    name: string
 }
