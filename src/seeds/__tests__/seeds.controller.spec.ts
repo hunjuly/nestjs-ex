@@ -1,10 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { DatabaseModule } from 'src/database'
-import { CreateSeedDto, UpdateSeedDto } from '../dto'
-import { Seed } from '../entities'
+import { SeedDto } from '../dto'
+import { CreateSeedDto } from '../dto/create-seed.dto'
+import { UpdateSeedDto } from '../dto/update-seed.dto'
 import { SeedsController } from '../seeds.controller'
-import { SeedsRepository } from '../seeds.repository'
 import { SeedsService } from '../seeds.service'
 
 describe('SeedsController', () => {
@@ -13,52 +11,101 @@ describe('SeedsController', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [TypeOrmModule.forFeature([Seed]), DatabaseModule],
             controllers: [SeedsController],
-            providers: [SeedsService, SeedsRepository]
+            providers: [
+                {
+                    provide: SeedsService,
+                    useValue: {
+                        create: jest.fn(),
+                        findAll: jest.fn(),
+                        findById: jest.fn(),
+                        update: jest.fn(),
+                        remove: jest.fn()
+                    }
+                }
+            ]
         }).compile()
 
         controller = module.get<SeedsController>(SeedsController)
         service = module.get<SeedsService>(SeedsService)
     })
 
-    it('should call SeedsService.create method with the provided dto', () => {
-        const dto: CreateSeedDto = { name: 'test' }
-        jest.spyOn(service, 'create').mockResolvedValueOnce({ id: '1', name: 'test' })
+    describe('create', () => {
+        it('should create a new seed', async () => {
+            const createSeedDto: CreateSeedDto = {
+                name: 'test seed'
+            }
+            const expectedSeed: SeedDto = {
+                id: '123',
+                name: 'test seed'
+            }
+            jest.spyOn(service, 'create').mockResolvedValue(expectedSeed)
 
-        expect(controller.create(dto)).resolves.toEqual({ id: '1', name: 'test' })
-        expect(service.create).toHaveBeenCalledWith(dto)
+            const result = await controller.create(createSeedDto)
+
+            expect(result).toBe(expectedSeed)
+            expect(service.create).toHaveBeenCalledWith(createSeedDto)
+        })
     })
 
-    it('should call SeedsService.findAll method', () => {
-        jest.spyOn(service, 'findAll').mockResolvedValueOnce([{ id: '1', name: 'test' }])
+    describe('findAll', () => {
+        it('should return an array of seeds', async () => {
+            const expectedSeeds: SeedDto[] = [
+                { id: '123', name: 'seed 1' },
+                { id: '456', name: 'seed 2' }
+            ]
+            jest.spyOn(service, 'findAll').mockResolvedValue(expectedSeeds)
 
-        expect(controller.findAll()).resolves.toEqual([{ id: '1', name: 'test' }])
-        expect(service.findAll).toHaveBeenCalled()
+            const result = await controller.findAll()
+
+            expect(result).toBe(expectedSeeds)
+            expect(service.findAll).toHaveBeenCalled()
+        })
     })
 
-    it('should call SeedsService.findById method with the provided id', () => {
-        const id = '1'
-        jest.spyOn(service, 'findById').mockResolvedValueOnce({ id: '1', name: 'test' })
+    describe('findById', () => {
+        it('should return a seed by ID', async () => {
+            const expectedSeed: SeedDto = {
+                id: '123',
+                name: 'test seed'
+            }
+            jest.spyOn(service, 'findById').mockResolvedValue(expectedSeed)
 
-        expect(controller.findById(id)).resolves.toEqual({ id: '1', name: 'test' })
-        expect(service.findById).toHaveBeenCalledWith(id)
+            const result = await controller.findById('123')
+
+            expect(result).toBe(expectedSeed)
+            expect(service.findById).toHaveBeenCalledWith('123')
+        })
     })
 
-    it('should call SeedsService.update method with the provided id and dto', () => {
-        const id = '1'
-        const dto: UpdateSeedDto = { name: 'updated' }
-        jest.spyOn(service, 'update').mockResolvedValueOnce({ id: '1', name: 'updated' })
+    describe('update', () => {
+        it('should update a seed by ID', async () => {
+            const updateSeedDto: UpdateSeedDto = {
+                name: 'updated seed'
+            }
+            const expectedSeed: SeedDto = {
+                id: '123',
+                name: 'updated seed'
+            }
+            jest.spyOn(service, 'update').mockResolvedValue(expectedSeed)
 
-        expect(controller.update(id, dto)).resolves.toEqual({ id: '1', name: 'updated' })
-        expect(service.update).toHaveBeenCalledWith(id, dto)
+            const result = await controller.update('123', updateSeedDto)
+
+            expect(result).toBe(expectedSeed)
+            expect(service.update).toHaveBeenCalledWith('123', updateSeedDto)
+        })
     })
 
-    it('should call SeedsService.remove method with the provided id', () => {
-        const id = '1'
-        jest.spyOn(service, 'remove').mockResolvedValueOnce()
+    describe('remove', () => {
+        it('should remove a seed', async () => {
+            const id = '123'
 
-        expect(controller.remove(id)).resolves.toEqual(undefined)
-        expect(service.remove).toHaveBeenCalledWith(id)
+            jest.spyOn(service, 'remove').mockResolvedValue(undefined)
+
+            const response = await controller.remove(id)
+
+            expect(response).toBeUndefined()
+            expect(service.remove).toHaveBeenCalledWith(id)
+        })
     })
 })

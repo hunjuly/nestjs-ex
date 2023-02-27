@@ -1,39 +1,50 @@
 import { Injectable } from '@nestjs/common'
-import { Expect } from 'src/common'
+import { plainToClass, plainToInstance } from 'class-transformer'
+import { Expect, updateIntersection } from 'src/common'
+import { SeedDto } from './dto'
 import { CreateSeedDto } from './dto/create-seed.dto'
 import { UpdateSeedDto } from './dto/update-seed.dto'
-import { Seed } from './entities'
 import { SeedsRepository } from './seeds.repository'
 
 @Injectable()
 export class SeedsService {
     constructor(private repository: SeedsRepository) {}
 
-    async create(createSeedDto: CreateSeedDto): Promise<Seed> {
+    async create(createSeedDto: CreateSeedDto): Promise<SeedDto> {
         const newSeed = this.repository.create(createSeedDto)
+        const seed = await this.repository.save(newSeed)
 
-        return this.repository.save(newSeed)
+        return plainToClass(SeedDto, seed)
     }
 
-    async findAll(): Promise<Seed[]> {
-        return this.repository.find()
+    async findAll(): Promise<SeedDto[]> {
+        const seeds = await this.repository.find()
+
+        return seeds.map((seed) => plainToClass(SeedDto, seed))
     }
 
-    async findById(id: string): Promise<Seed> {
+    async findById(id: string): Promise<SeedDto> {
         const seed = await this.repository.findOneBy({ id })
 
         Expect.found(seed, `Seed with ID ${id} not found`)
 
-        return seed
+        return plainToClass(SeedDto, seed)
     }
 
-    async update(id: string, updateSeedDto: UpdateSeedDto): Promise<Seed> {
-        const seed = await this.findById(id)
+    async update(id: string, updateSeedDto: UpdateSeedDto): Promise<SeedDto> {
+        const seed = await this.repository.findOneBy({ id })
 
-        const newSeed = this.repository.create(updateSeedDto)
-        const updatedSeed = Object.assign(seed, newSeed)
+        Expect.found(seed, `Seed with ID ${id} not found`)
 
-        return this.repository.save(updatedSeed)
+        const updatedSeed = updateIntersection(seed, updateSeedDto)
+
+        const savedSeed = await this.repository.save(updatedSeed)
+
+        const val = plainToInstance(SeedDto, savedSeed, {
+            // excludeExtraneousValues: true,
+            exposeUnsetFields: false
+        })
+        return val
     }
 
     async remove(id: string): Promise<void> {

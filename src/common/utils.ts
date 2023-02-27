@@ -23,3 +23,14 @@ export function generateUUID() {
         return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
     })
 }
+
+export function updateIntersection<T extends object>(obj1: T, obj2: any): T {
+    const updatedObject = Object.keys(obj2).reduce((updated, key) => {
+        if (key in obj1) {
+            updated[key as keyof T] = obj2[key]
+        }
+        return updated
+    }, obj1)
+
+    return updatedObject
+}

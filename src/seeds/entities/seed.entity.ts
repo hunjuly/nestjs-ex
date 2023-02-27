@@ -10,6 +10,12 @@ export class Seed {
 
     private isGerminated = false
 
+    constructor(id: string, name: string, isGerminated = false) {
+        this.id = id
+        this.name = name
+        this.isGerminated = isGerminated
+    }
+
     public water() {
         if (this.isGerminated) {
             throw new Error('Already germinated')
