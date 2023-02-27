@@ -1,84 +1,118 @@
 import { NotFoundException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import { getRepositoryToken } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/database'
-import { UpdateSeedDto } from '../dto'
+import { CreateSeedDto, UpdateSeedDto } from '../dto'
 import { Seed } from '../entities'
 import { SeedsRepository } from '../seeds.repository'
 import { SeedsService } from '../seeds.service'
 
 describe('SeedsService', () => {
     let service: SeedsService
-    let repository: Repository<Seed>
+    let repository: SeedsRepository
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [DatabaseModule],
+            imports: [TypeOrmModule.forFeature([Seed]), DatabaseModule],
             providers: [SeedsService, SeedsRepository]
         }).compile()
 
         service = module.get<SeedsService>(SeedsService)
-        repository = module.get<Repository<Seed>>(getRepositoryToken(SeedsRepository))
-    })
-
-    afterEach(() => {
-        jest.resetAllMocks()
+        repository = module.get<SeedsRepository>(SeedsRepository)
     })
 
     it('should be defined', () => {
         expect(service).toBeDefined()
     })
 
-    describe('findById', () => {
-        const seedId = '1'
-        const seedData: Seed = { id: seedId, name: 'Test Seed' }
+    describe('create', () => {
+        it('should create a new seed', async () => {
+            const createSeedDto: CreateSeedDto = {
+                name: 'Test Seed'
+            }
 
-        it('should return the found seed', async () => {
-            jest.spyOn(repository, 'findOne').mockResolvedValueOnce(seedData)
-            const result = await service.findById(seedId)
-            expect(result).toEqual(seedData)
+            const result = await service.create(createSeedDto)
+
+            expect(result).toBeDefined()
+            expect(result.id).toBeDefined()
+            expect(result.name).toEqual(createSeedDto.name)
+        })
+    })
+
+    describe('findAll', () => {
+        it('should return an array of seeds', async () => {
+            const seeds = await service.findAll()
+
+            expect(seeds).toBeDefined()
+            expect(Array.isArray(seeds)).toBeTruthy()
+        })
+    })
+
+    describe('findById', () => {
+        it('should return a seed by ID', async () => {
+            const createSeedDto: CreateSeedDto = {
+                name: 'Test Seed'
+            }
+            const seed = await service.create(createSeedDto)
+
+            const result = await service.findById(seed.id)
+
+            expect(result).toBeDefined()
+            expect(result.id).toEqual(seed.id)
+            expect(result.name).toEqual(seed.name)
         })
 
-        it('should throw NotFoundException if seed is not found', async () => {
-            jest.spyOn(repository, 'findOne').mockResolvedValueOnce(undefined)
-            await expect(service.findById(seedId)).rejects.toThrow(NotFoundException)
+        it('should throw a NotFoundException if seed is not found', async () => {
+            const fakeSeedId = 'fake-id'
+
+            await expect(service.findById(fakeSeedId)).rejects.toThrowError(NotFoundException)
         })
     })
 
     describe('update', () => {
-        const seedId = '1'
-        const seedData: Seed = { id: seedId, name: 'Test Seed' }
-        const updateData: UpdateSeedDto = { name: 'Updated Seed' }
+        it('should update a seed', async () => {
+            const createSeedDto: CreateSeedDto = {
+                name: 'Test Seed'
+            }
+            const seed = await service.create(createSeedDto)
 
-        it('should return the updated seed', async () => {
-            jest.spyOn(repository, 'findOne').mockResolvedValueOnce(seedData)
-            jest.spyOn(repository, 'save').mockResolvedValueOnce({ ...seedData, ...updateData })
-            const result = await service.update(seedId, updateData)
-            expect(result).toEqual({ ...seedData, ...updateData })
+            const updateSeedDto: UpdateSeedDto = {
+                name: 'Updated Test Seed'
+            }
+
+            const result = await service.update(seed.id, updateSeedDto)
+
+            expect(result).toBeDefined()
+            expect(result.id).toEqual(seed.id)
+            expect(result.name).toEqual(updateSeedDto.name)
         })
 
-        it('should throw NotFoundException if seed is not found', async () => {
-            jest.spyOn(repository, 'findOne').mockResolvedValueOnce(undefined)
-            await expect(service.update(seedId, updateData)).rejects.toThrow(NotFoundException)
+        it('should throw a NotFoundException if seed is not found', async () => {
+            const fakeSeedId = 'fake-id'
+            const updateSeedDto: UpdateSeedDto = {
+                name: 'Updated Test Seed'
+            }
+
+            await expect(service.update(fakeSeedId, updateSeedDto)).rejects.toThrowError(NotFoundException)
         })
     })
 
     describe('remove', () => {
-        const seedId = '1'
-        const seedData: Seed = { id: seedId, name: 'Test Seed' }
+        it('should remove a seed', async () => {
+            const createSeedDto: CreateSeedDto = {
+                name: 'Test Seed'
+            }
+            const seed = await service.create(createSeedDto)
 
-        it('should delete the seed', async () => {
-            jest.spyOn(repository, 'findOne').mockResolvedValueOnce(seedData)
-            jest.spyOn(repository, 'exist').mockResolvedValueOnce(true)
-            jest.spyOn(repository, 'delete').mockResolvedValueOnce(undefined)
-            await service.remove(seedId)
-            expect(repository.delete).toHaveBeenCalledWith(seedId)
+            await service.remove(seed.id)
+
+            const seeds = await service.findAll()
+            expect(seeds.length).toEqual(0)
         })
 
         it('should throw NotFoundException if seed is not found', async () => {
             jest.spyOn(repository, 'findOne').mockResolvedValueOnce(undefined)
-            await expect(service.remove(seedId)).rejects.toThrow(NotFoundException)
+            await expect(service.remove('fake-id')).rejects.toThrow(NotFoundException)
         })
     })
 })

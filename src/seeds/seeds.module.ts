@@ -11,20 +11,3 @@ import { SeedsService } from './seeds.service'
     providers: [SeedsService, SeedsRepository]
 })
 export class SeedsModule {}
-
-/*
-src/
-|-- app.module.ts
-|-- users/
-    |-- users.module.ts
-    |-- users.controller.ts
-    |-- users.service.ts
-    |-- dto/
-    |   |-- create-user.dto.ts
-    |   |-- update-user.dto.ts
-    |   |-- user.dto.ts
-    |-- entities/
-    |   |-- user.entity.ts
-    |-- repositories/
-        |-- users.repository.ts
-*/

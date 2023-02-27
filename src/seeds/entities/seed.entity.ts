@@ -7,6 +7,23 @@ export class Seed {
 
     @Column()
     name: string
+
+    private isGerminated = false
+
+    public water() {
+        if (this.isGerminated) {
+            throw new Error('Already germinated')
+        }
+
+        this.isGerminated = true
+    }
+
+    public giveSunlight() {
+        if (this.isGerminated) {
+        } else {
+            throw new Error('Seed has not germinated yet')
+        }
+    }
 }
 
 /*
@@ -31,40 +48,4 @@ TypeORM과 같은 ORM 프레임워크를 사용할 때, entity는 도메인 객�
 
 마찬가지로, 서비스는 도메인 객체를 조작하고 도메인 로직을 캡슐화하기 때문에 도메인 레이어에 위치하는 것이 일반적입니다.
 이렇게 하면 서비스가 도메인 객체와 도메인 로직을 더 잘 캡슐화 할 수 있으며, 비즈니스 규칙의 변화에 대응하기 쉽습니다.
-
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
-@Entity()
-export class Seed {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  name: string;
-
-  @Column()
-  description: string;
-
-  private isGerminated: boolean = false;
-
-  public water(amount: number) {
-    if (this.isGerminated) {
-      throw new Error('Already germinated');
-    }
-
-    // do something with the water
-    // ...
-
-    this.isGerminated = true;
-  }
-
-  public giveSunlight(amount: number) {
-    if (this.isGerminated) {
-      // do something with the sunlight
-      // ...
-    } else {
-      throw new Error('Seed has not germinated yet');
-    }
-  }
-}
 */

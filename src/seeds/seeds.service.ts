@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { Expect } from 'src/common'
 import { CreateSeedDto } from './dto/create-seed.dto'
 import { UpdateSeedDto } from './dto/update-seed.dto'
@@ -39,9 +39,7 @@ export class SeedsService {
     async remove(id: string): Promise<void> {
         const seedExists = await this.repository.exist({ where: { id } })
 
-        if (!seedExists) {
-            throw new NotFoundException(`Seed with ID ${id} not found`)
-        }
+        Expect.found(seedExists, `Seed with ID ${id} not found`)
 
         await this.repository.delete(id)
     }
