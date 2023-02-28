@@ -13,7 +13,7 @@ const config: Config.InitialOptions = {
     transform: {
         '^.+\\.(t|j)s$': 'ts-jest'
     },
-    collectCoverageFrom: ['src/**/*.ts'],
+    collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/index.{ts,tsx}', '!src/main.ts'],
     coveragePathIgnorePatterns: ['__tests__'],
     coverageDirectory: './coverage'
 }

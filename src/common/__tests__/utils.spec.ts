@@ -29,6 +29,16 @@ describe('common/utils', () => {
 
             expect(uuid1).not.toEqual(uuid2)
         })
+
+        it('handles browsers without support for performance', () => {
+            ;(global as any).performance = undefined
+
+            const uuid1 = generateUUID()
+
+            delete (global as any).performance
+
+            expect(uuid1).toBeDefined()
+        })
     })
 
     describe('updateIntersection', () => {
@@ -48,22 +58,4 @@ describe('common/utils', () => {
             expect(result).toEqual(obj1)
         })
     })
-})
-
-export class SeedDto {
-    id: string
-    name: string
-}
-
-it('aa', () => {
-    const seed = new SeedDto()
-    const updatedObject = Object.keys(seed)
-
-    console.log(updatedObject, seed)
-    // .reduce((updated, key) => {
-    //     if (key in obj1) {
-    //         updated[key as keyof T] = obj2[key]
-    //     }
-    //     return updated
-    // }, obj1)
 })

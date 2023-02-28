@@ -4,23 +4,33 @@ import { Expect, updateIntersection } from 'src/common'
 import { SeedDto } from './dto'
 import { CreateSeedDto } from './dto/create-seed.dto'
 import { UpdateSeedDto } from './dto/update-seed.dto'
+import { Seed } from './entities'
 import { SeedsRepository } from './seeds.repository'
 
 @Injectable()
 export class SeedsService {
     constructor(private repository: SeedsRepository) {}
 
+    entityToDto(entity: Seed): SeedDto {
+        const { id, name } = entity
+
+        return {
+            id,
+            name
+        }
+    }
+
     async create(createSeedDto: CreateSeedDto): Promise<SeedDto> {
         const newSeed = this.repository.create(createSeedDto)
         const seed = await this.repository.save(newSeed)
 
-        return plainToClass(SeedDto, seed)
+        return this.entityToDto(seed)
     }
 
     async findAll(): Promise<SeedDto[]> {
         const seeds = await this.repository.find()
 
-        return seeds.map((seed) => plainToClass(SeedDto, seed))
+        return seeds.map((seed) => this.entityToDto(seed))
     }
 
     async findById(id: string): Promise<SeedDto> {
@@ -28,7 +38,7 @@ export class SeedsService {
 
         Expect.found(seed, `Seed with ID ${id} not found`)
 
-        return plainToClass(SeedDto, seed)
+        return this.entityToDto(seed)
     }
 
     async update(id: string, updateSeedDto: UpdateSeedDto): Promise<SeedDto> {
@@ -40,11 +50,7 @@ export class SeedsService {
 
         const savedSeed = await this.repository.save(updatedSeed)
 
-        const val = plainToInstance(SeedDto, savedSeed, {
-            // excludeExtraneousValues: true,
-            exposeUnsetFields: false
-        })
-        return val
+        return this.entityToDto(savedSeed)
     }
 
     async remove(id: string): Promise<void> {

@@ -8,12 +8,16 @@ export class Seed {
     @Column()
     name: string
 
-    private isGerminated = false
+    private _isGerminated: boolean
 
     constructor(id: string, name: string, isGerminated = false) {
         this.id = id
         this.name = name
-        this.isGerminated = isGerminated
+        this._isGerminated = isGerminated
+    }
+
+    public get isGerminated() {
+        return this._isGerminated
     }
 
     public water() {
@@ -21,7 +25,7 @@ export class Seed {
             throw new Error('Already germinated')
         }
 
-        this.isGerminated = true
+        this._isGerminated = true
     }
 
     public giveSunlight() {
