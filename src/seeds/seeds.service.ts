@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { plainToClass, plainToInstance } from 'class-transformer'
 import { Expect, updateIntersection } from 'src/common'
 import { SeedDto } from './dto'
 import { CreateSeedDto } from './dto/create-seed.dto'
@@ -11,7 +10,7 @@ import { SeedsRepository } from './seeds.repository'
 export class SeedsService {
     constructor(private repository: SeedsRepository) {}
 
-    entityToDto(entity: Seed): SeedDto {
+    createSeedDto(entity: Seed): SeedDto {
         const { id, name } = entity
 
         return {
@@ -24,13 +23,13 @@ export class SeedsService {
         const newSeed = this.repository.create(createSeedDto)
         const seed = await this.repository.save(newSeed)
 
-        return this.entityToDto(seed)
+        return this.createSeedDto(seed)
     }
 
     async findAll(): Promise<SeedDto[]> {
         const seeds = await this.repository.find()
 
-        return seeds.map((seed) => this.entityToDto(seed))
+        return seeds.map((seed) => this.createSeedDto(seed))
     }
 
     async findById(id: string): Promise<SeedDto> {
@@ -38,7 +37,7 @@ export class SeedsService {
 
         Expect.found(seed, `Seed with ID ${id} not found`)
 
-        return this.entityToDto(seed)
+        return this.createSeedDto(seed)
     }
 
     async update(id: string, updateSeedDto: UpdateSeedDto): Promise<SeedDto> {
@@ -50,7 +49,7 @@ export class SeedsService {
 
         const savedSeed = await this.repository.save(updatedSeed)
 
-        return this.entityToDto(savedSeed)
+        return this.createSeedDto(savedSeed)
     }
 
     async remove(id: string): Promise<void> {
