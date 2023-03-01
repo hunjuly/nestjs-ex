@@ -1,23 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
-import { SeedDto } from './dto'
-import { CreateSeedDto } from './dto/create-seed.dto'
-import { UpdateSeedDto } from './dto/update-seed.dto'
+import { CreateSeedDto, SeedDto, UpdateSeedDto } from './dto'
 import { Seed } from './entities'
 import { SeedsRepository } from './seeds.repository'
 
 @Injectable()
 export class SeedsService {
     constructor(private repository: SeedsRepository) {}
-
-    createSeedDto(entity: Seed): SeedDto {
-        const { id, name } = entity
-
-        return {
-            id,
-            name
-        }
-    }
 
     async create(createSeedDto: CreateSeedDto): Promise<SeedDto> {
         const newSeed = this.repository.create(createSeedDto)
@@ -58,5 +47,14 @@ export class SeedsService {
         Expect.found(seedExists, `Seed with ID ${id} not found`)
 
         await this.repository.delete(id)
+    }
+
+    createSeedDto(entity: Seed): SeedDto {
+        const { id, name } = entity
+
+        return {
+            id,
+            name
+        }
     }
 }
