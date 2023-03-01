@@ -1,18 +1,17 @@
 import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { DatabaseModule } from 'src/database'
-import { SeedsModule } from 'src/seeds'
+import { AppModule } from 'src/app.module'
 
 // e2e는 순차적으로 실행이 맞다
-describe('SeedsController (e2e)', () => {
+describe('UsersController (e2e)', () => {
     let app: INestApplication
     let server
-    let seedId: string
+    let userId: string
 
     beforeAll(async () => {
         const moduleFixture = await Test.createTestingModule({
-            imports: [DatabaseModule, SeedsModule]
+            imports: [AppModule]
         }).compile()
 
         app = moduleFixture.createNestApplication()
@@ -25,71 +24,71 @@ describe('SeedsController (e2e)', () => {
         await app.close()
     })
 
-    it('/seeds (POST)', () => {
+    it('/users (POST)', () => {
         return request(server)
-            .post('/seeds')
+            .post('/users')
             .send({
-                name: 'Seed 1'
+                name: 'User 1'
             })
             .expect(201)
             .expect((res) => {
                 expect(res.body.id).toBeDefined()
-                expect(res.body.name).toEqual('Seed 1')
+                expect(res.body.name).toEqual('User 1')
 
-                seedId = res.body.id
+                userId = res.body.id
             })
     })
 
-    it('/seeds (GET)', () => {
+    it('/users (GET)', () => {
         return request(server)
-            .get('/seeds')
+            .get('/users')
             .expect(200)
             .expect((res) => {
                 expect(res.body.length).toBeGreaterThan(0)
             })
     })
 
-    it('/seeds/:id (GET)', () => {
+    it('/users/:id (GET)', () => {
         return request(server)
-            .get(`/seeds/${seedId}`)
+            .get(`/users/${userId}`)
             .expect(200)
             .expect((res) => {
-                expect(res.body.id).toEqual(seedId)
+                expect(res.body.id).toEqual(userId)
                 expect(res.body.name).toBeDefined()
             })
     })
 
-    it('/seeds/:id (GET - Not Found)', () => {
-        return request(server).get('/seeds/999').expect(404)
+    it('/users/:id (GET - Not Found)', () => {
+        return request(server).get('/users/999').expect(404)
     })
 
-    it('/seeds/:id (PATCH)', () => {
+    it('/users/:id (PATCH)', () => {
         return request(server)
-            .patch(`/seeds/${seedId}`)
+            .patch(`/users/${userId}`)
             .send({
-                name: 'Updated Seed'
+                name: 'Updated User'
             })
             .expect(200)
             .expect((res) => {
-                expect(res.body.id).toEqual(seedId)
-                expect(res.body.name).toEqual('Updated Seed')
+                expect(res.body.id).toEqual(userId)
+                expect(res.body.name).toEqual('Updated User')
             })
     })
 
-    it('/seeds/:id (PATCH - Not Found)', () => {
+    it('/users/:id (PATCH - Not Found)', () => {
         return request(server)
-            .patch('/seeds/999')
+            .patch('/users/999')
             .send({
-                name: 'Updated Seed'
+                name: 'Updated User'
             })
             .expect(404)
     })
 
-    it('/seeds/:id (DELETE)', () => {
-        return request(server).delete(`/seeds/${seedId}`).expect(200)
+    it('/users/:id (DELETE)', () => {
+        return request(server).delete(`/users/${userId}`).expect(200)
     })
 
-    it('/seeds/:id (DELETE - Not Found)', () => {
-        return request(server).delete('/seeds/999').expect(404)
+    it('/users/:id (DELETE - Not Found)', () => {
+        return request(server).delete('/users/999').expect(404)
     })
 })

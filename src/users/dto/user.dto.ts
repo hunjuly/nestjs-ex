@@ -1,19 +1,19 @@
 import { IsNotEmpty, IsUUID } from 'class-validator'
-import { Seed } from '../entities'
+import { User } from '../entities'
 
-export class SeedDto {
+export class UserDto {
     @IsUUID()
     id: string
 
     @IsNotEmpty()
     name: string
 
-    constructor(seed: Seed) {
-        const { id, name } = seed
+    constructor(user: User) {
+        const { id, name } = user
 
         this.id = id
         this.name = name
 
-        // Object.assign(this, seed)
+        // Object.assign(this, user)
     }
 }

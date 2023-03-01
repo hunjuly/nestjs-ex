@@ -4,11 +4,29 @@ import { Repository } from 'typeorm'
 import { Seed } from './entities'
 
 @Injectable()
-export class SeedsRepository extends Repository<Seed> {
+export class SeedsRepository {
     constructor(
         @InjectRepository(Seed)
-        repository: Repository<Seed>
-    ) {
-        super(repository.target, repository.manager, repository.queryRunner)
+        private readonly repository: Repository<Seed>
+    ) {}
+
+    async findAll(): Promise<Seed[]> {
+        return this.repository.find()
+    }
+
+    async findById(id: string): Promise<Seed> {
+        return this.repository.findOneBy({ id })
+    }
+
+    async create(newSeed: Partial<Seed>): Promise<Seed> {
+        return this.repository.save(newSeed)
+    }
+
+    async save(seed: Seed): Promise<Seed> {
+        return this.repository.save(seed)
+    }
+
+    async remove(seed: Seed): Promise<void> {
+        await this.repository.remove(seed)
     }
 }

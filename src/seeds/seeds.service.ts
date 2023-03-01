@@ -1,60 +1,49 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
 import { CreateSeedDto, SeedDto, UpdateSeedDto } from './dto'
-import { Seed } from './entities'
 import { SeedsRepository } from './seeds.repository'
 
 @Injectable()
 export class SeedsService {
-    constructor(private repository: SeedsRepository) {}
+    constructor(private seedsRepository: SeedsRepository) {}
 
     async create(createSeedDto: CreateSeedDto): Promise<SeedDto> {
-        const newSeed = this.repository.create(createSeedDto)
-        const seed = await this.repository.save(newSeed)
+        const seed = await this.seedsRepository.create(createSeedDto)
 
-        return this.createSeedDto(seed)
+        return new SeedDto(seed)
     }
 
-    async findAll(): Promise<SeedDto[]> {
-        const seeds = await this.repository.find()
+    async findAll() {
+        const seeds = await this.seedsRepository.findAll()
 
-        return seeds.map((seed) => this.createSeedDto(seed))
+        return seeds.map((seed) => new SeedDto(seed))
     }
 
-    async findById(id: string): Promise<SeedDto> {
-        const seed = await this.repository.findOneBy({ id })
+    async findById(id: string) {
+        const seed = await this.seedsRepository.findById(id)
 
         Expect.found(seed, `Seed with ID ${id} not found`)
 
-        return this.createSeedDto(seed)
+        return new SeedDto(seed)
     }
 
-    async update(id: string, updateSeedDto: UpdateSeedDto): Promise<SeedDto> {
-        const seed = await this.repository.findOneBy({ id })
+    async update(id: string, updateSeedDto: UpdateSeedDto) {
+        const seed = await this.seedsRepository.findById(id)
 
         Expect.found(seed, `Seed with ID ${id} not found`)
 
         const updatedSeed = updateIntersection(seed, updateSeedDto)
 
-        const savedSeed = await this.repository.save(updatedSeed)
+        const savedSeed = await this.seedsRepository.save(updatedSeed)
 
-        return this.createSeedDto(savedSeed)
+        return new SeedDto(savedSeed)
     }
 
-    async remove(id: string): Promise<void> {
-        const seedExists = await this.repository.exist({ where: { id } })
+    async remove(id: string) {
+        const seed = await this.seedsRepository.findById(id)
 
-        Expect.found(seedExists, `Seed with ID ${id} not found`)
+        Expect.found(seed, `Seed with ID ${id} not found`)
 
-        await this.repository.delete(id)
-    }
-
-    createSeedDto(entity: Seed): SeedDto {
-        const { id, name } = entity
-
-        return {
-            id,
-            name
-        }
+        await this.seedsRepository.remove(seed)
     }
 }

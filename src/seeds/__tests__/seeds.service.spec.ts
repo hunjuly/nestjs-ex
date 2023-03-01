@@ -19,10 +19,9 @@ describe('SeedsService', () => {
                     provide: SeedsRepository,
                     useValue: {
                         create: jest.fn().mockResolvedValue(testSeed),
-                        find: jest.fn().mockResolvedValue([testSeed]),
-                        findOneBy: jest.fn().mockResolvedValue(testSeed),
-                        exist: jest.fn().mockResolvedValue(true),
-                        delete: jest.fn(),
+                        findAll: jest.fn().mockResolvedValue([testSeed]),
+                        findById: jest.fn().mockResolvedValue(testSeed),
+                        remove: jest.fn(),
                         save: jest.fn().mockResolvedValue(testSeed)
                     }
                 }
@@ -64,7 +63,7 @@ describe('SeedsService', () => {
         })
 
         it('should throw an error if the seed is not found', async () => {
-            jest.spyOn(repository, 'findOneBy').mockResolvedValue(undefined)
+            jest.spyOn(repository, 'findById').mockResolvedValue(undefined)
             await expect(service.findById(id)).rejects.toThrow(`Seed with ID ${id} not found`)
         })
     })
@@ -82,7 +81,7 @@ describe('SeedsService', () => {
         })
 
         it('should throw an error if the seed is not found', async () => {
-            jest.spyOn(repository, 'findOneBy').mockResolvedValue(undefined)
+            jest.spyOn(repository, 'findById').mockResolvedValue(undefined)
             await expect(service.update(id, updateSeedDto)).rejects.toThrow(`Seed with ID ${id} not found`)
         })
     })
@@ -92,11 +91,11 @@ describe('SeedsService', () => {
 
         it('should remove a seed by id', async () => {
             await service.remove(id)
-            expect(repository.delete).toHaveBeenCalledWith(id)
+            expect(repository.remove).toHaveBeenCalledWith(testSeed)
         })
 
         it('should throw an error if the seed is not found', async () => {
-            jest.spyOn(repository, 'exist').mockResolvedValue(false)
+            jest.spyOn(repository, 'findById').mockResolvedValue(undefined)
             await expect(service.remove(id)).rejects.toThrow(`Seed with ID ${id} not found`)
         })
     })
