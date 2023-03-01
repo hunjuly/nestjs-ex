@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
-import { CreateSeedDto, SeedDto, UpdateSeedDto } from './dto'
+import { CreateSeedDto, UpdateSeedDto } from './dto'
 import { SeedsRepository } from './seeds.repository'
 
 @Injectable()
 export class SeedsService {
     constructor(private seedsRepository: SeedsRepository) {}
 
-    async create(createSeedDto: CreateSeedDto): Promise<SeedDto> {
+    async create(createSeedDto: CreateSeedDto) {
         const seed = await this.seedsRepository.create(createSeedDto)
 
-        return new SeedDto(seed)
+        return seed
     }
 
     async findAll() {
         const seeds = await this.seedsRepository.findAll()
 
-        return seeds.map((seed) => new SeedDto(seed))
+        return seeds
     }
 
     async findById(id: string) {
@@ -24,7 +24,7 @@ export class SeedsService {
 
         Expect.found(seed, `Seed with ID ${id} not found`)
 
-        return new SeedDto(seed)
+        return seed
     }
 
     async update(id: string, updateSeedDto: UpdateSeedDto) {
@@ -36,7 +36,7 @@ export class SeedsService {
 
         const savedSeed = await this.seedsRepository.save(updatedSeed)
 
-        return new SeedDto(savedSeed)
+        return savedSeed
     }
 
     async remove(id: string) {

@@ -7,18 +7,21 @@ export class User {
     id: string
 
     @Column()
+    email: string
+
+    @Column()
     @Exclude()
     password: string
 
-    @Column({ type: 'date', nullable: true })
+    @Column({ type: 'datetime' })
     birthdate: Date
 
-    @Column({ nullable: true })
+    @Column()
     username: string
 
-    @Column({ nullable: true })
+    @Column()
     firstName: string
 
-    @Column({ nullable: true })
+    @Column()
     lastName: string
 }

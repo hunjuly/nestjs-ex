@@ -1,20 +1,20 @@
 import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { AppModule } from 'src/app.module'
+import { DatabaseModule } from 'src/database'
+import { UsersModule } from '../users.module'
 
-// e2e는 순차적으로 실행이 맞다
 describe('UsersController (e2e)', () => {
     let app: INestApplication
     let server
     let userId: string
 
     beforeAll(async () => {
-        const moduleFixture = await Test.createTestingModule({
-            imports: [AppModule]
+        const module = await Test.createTestingModule({
+            imports: [DatabaseModule, UsersModule]
         }).compile()
 
-        app = moduleFixture.createNestApplication()
+        app = module.createNestApplication()
         await app.init()
 
         server = app.getHttpServer()
@@ -28,6 +28,7 @@ describe('UsersController (e2e)', () => {
         return request(server)
             .post('/users')
             .send({
+                email: 'user@mail.com',
                 username: 'testuser',
                 firstName: 'Test',
                 lastName: 'User',

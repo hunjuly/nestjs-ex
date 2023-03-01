@@ -2,20 +2,19 @@ import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { DatabaseModule } from 'src/database'
-import { SeedsModule } from 'src/seeds'
+import { SeedsModule } from '../seeds.module'
 
-// e2e는 순차적으로 실행이 맞다
-describe('SeedsController (e2e)', () => {
+describe('SeedsModule', () => {
     let app: INestApplication
     let server
     let seedId: string
 
     beforeAll(async () => {
-        const moduleFixture = await Test.createTestingModule({
+        const module = await Test.createTestingModule({
             imports: [DatabaseModule, SeedsModule]
         }).compile()
 
-        app = moduleFixture.createNestApplication()
+        app = module.createNestApplication()
         await app.init()
 
         server = app.getHttpServer()

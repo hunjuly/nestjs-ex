@@ -1,19 +1,19 @@
-import { IsDateString, IsNotEmpty, IsString, IsUUID } from 'class-validator'
+import { IsDateString, IsEmail, IsString, IsUUID } from 'class-validator'
 import { User } from '../entities'
 
 export class UserDto {
     @IsUUID()
     id: string
 
-    @IsNotEmpty()
+    @IsEmail()
+    email: string
+
     @IsString()
     username: string
 
-    @IsNotEmpty()
     @IsString()
     firstName: string
 
-    @IsNotEmpty()
     @IsString()
     lastName: string
 
@@ -21,9 +21,10 @@ export class UserDto {
     birthdate: Date
 
     constructor(user: User) {
-        const { id, username, firstName, lastName, birthdate } = user
+        const { id, email, username, firstName, lastName, birthdate } = user
 
         this.id = id
+        this.email = email
         this.username = username
         this.firstName = firstName
         this.lastName = lastName

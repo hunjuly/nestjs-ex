@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, HashService, updateIntersection } from 'src/common'
-import { CreateUserDto, UpdateUserDto, UserDto } from './dto'
+import { CreateUserDto, UpdateUserDto } from './dto'
+import { User } from './entities'
 import { UsersRepository } from './users.repository'
 
 @Injectable()
@@ -16,13 +17,13 @@ export class UsersService {
         }
         const user = await this.usersRepository.create(createUser)
 
-        return new UserDto(user)
+        return user
     }
 
     async findAll() {
         const users = await this.usersRepository.findAll()
 
-        return users.map((user) => new UserDto(user))
+        return users
     }
 
     async findById(id: string) {
@@ -30,7 +31,15 @@ export class UsersService {
 
         Expect.found(user, `User with ID ${id} not found`)
 
-        return new UserDto(user)
+        return user
+    }
+
+    async findByEmail(email: string) {
+        const user = await this.usersRepository.findByEmail(email)
+
+        Expect.found(user, `User with email ${email} not found`)
+
+        return user
     }
 
     async update(id: string, updateUserDto: UpdateUserDto) {
@@ -42,7 +51,7 @@ export class UsersService {
 
         const savedUser = await this.usersRepository.save(updatedUser)
 
-        return new UserDto(savedUser)
+        return savedUser
     }
 
     async remove(id: string) {
@@ -51,5 +60,9 @@ export class UsersService {
         Expect.found(user, `User with ID ${id} not found`)
 
         await this.usersRepository.remove(user)
+    }
+
+    async validateUser(user: User, password: string) {
+        return this.hashService.validatePassword(password, user.password)
     }
 }
