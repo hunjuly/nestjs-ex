@@ -8,31 +8,8 @@ export class Seed {
     @Column()
     name: string
 
-    private _isGerminated: boolean
-
-    constructor(id: string, name: string, isGerminated = false) {
-        this.id = id
-        this.name = name
-        this._isGerminated = isGerminated
-    }
-
-    public get isGerminated() {
-        return this._isGerminated
-    }
-
-    public water() {
-        if (this.isGerminated) {
-            throw new Error('Already germinated')
-        }
-
-        this._isGerminated = true
-    }
-
-    public giveSunlight() {
-        if (this.isGerminated) {
-        } else {
-            throw new Error('Seed has not germinated yet')
-        }
+    info() {
+        return this.id + ' ' + this.name
     }
 }
 

@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common'
-import { Expect, updateIntersection } from 'src/common'
+import { Expect, HashService, updateIntersection } from 'src/common'
 import { CreateUserDto, UpdateUserDto, UserDto } from './dto'
 import { UsersRepository } from './users.repository'
 
 @Injectable()
 export class UsersService {
-    constructor(private usersRepository: UsersRepository) {}
+    constructor(private usersRepository: UsersRepository, private readonly hashService: HashService) {}
 
-    async create(createUserDto: CreateUserDto): Promise<UserDto> {
-        const user = await this.usersRepository.create(createUserDto)
+    async create(createUserDto: CreateUserDto) {
+        const { password } = createUserDto
+        const hashedPassword = await this.hashService.hashPassword(password)
+        const createUser = {
+            ...createUserDto,
+            password: hashedPassword
+        }
+        const user = await this.usersRepository.create(createUser)
 
         return new UserDto(user)
     }

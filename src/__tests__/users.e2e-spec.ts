@@ -28,12 +28,16 @@ describe('UsersController (e2e)', () => {
         return request(server)
             .post('/users')
             .send({
-                name: 'User 1'
+                username: 'testuser',
+                firstName: 'Test',
+                lastName: 'User',
+                birthdate: new Date(),
+                password: 'password'
             })
             .expect(201)
             .expect((res) => {
                 expect(res.body.id).toBeDefined()
-                expect(res.body.name).toEqual('User 1')
+                expect(res.body.username).toEqual('testuser')
 
                 userId = res.body.id
             })
@@ -54,7 +58,7 @@ describe('UsersController (e2e)', () => {
             .expect(200)
             .expect((res) => {
                 expect(res.body.id).toEqual(userId)
-                expect(res.body.name).toBeDefined()
+                expect(res.body.username).toBeDefined()
             })
     })
 
@@ -66,12 +70,12 @@ describe('UsersController (e2e)', () => {
         return request(server)
             .patch(`/users/${userId}`)
             .send({
-                name: 'Updated User'
+                username: 'Updated User'
             })
             .expect(200)
             .expect((res) => {
                 expect(res.body.id).toEqual(userId)
-                expect(res.body.name).toEqual('Updated User')
+                expect(res.body.username).toEqual('Updated User')
             })
     })
 
@@ -79,7 +83,7 @@ describe('UsersController (e2e)', () => {
         return request(server)
             .patch('/users/999')
             .send({
-                name: 'Updated User'
+                username: 'Updated User'
             })
             .expect(404)
     })

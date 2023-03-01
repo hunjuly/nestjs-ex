@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { plainToInstance } from 'class-transformer'
 import { CreateSeedDto, SeedDto, UpdateSeedDto } from '../dto'
 import { Seed } from '../entities'
 import { SeedsRepository } from '../seeds.repository'
@@ -8,8 +9,8 @@ describe('SeedsService', () => {
     let service: SeedsService
     let repository: SeedsRepository
 
-    const testSeed = new Seed('123', 'testSeed', true)
-    const testSeedDto: SeedDto = { id: '123', name: 'testSeed' }
+    const testSeed: Seed = plainToInstance(Seed, { id: '123', name: 'testSeed' })
+    const testSeedDto = new SeedDto(testSeed)
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
