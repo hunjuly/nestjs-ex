@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { ConflictException, Injectable } from '@nestjs/common'
 import { Expect, HashService, updateIntersection } from 'src/common'
 import { CreateUserDto, UpdateUserDto } from './dto'
 import { User } from './entities'
@@ -9,12 +9,21 @@ export class UsersService {
     constructor(private usersRepository: UsersRepository, private readonly hashService: HashService) {}
 
     async create(createUserDto: CreateUserDto) {
-        const { password } = createUserDto
+        const { email, password } = createUserDto
+
+        const existingUser = await this.usersRepository.findByEmail(email)
+
+        if (existingUser) {
+            throw new ConflictException(`User with email ${email} already exists`)
+        }
+
         const hashedPassword = await this.hashService.hashPassword(password)
+
         const createUser = {
             ...createUserDto,
             password: hashedPassword
         }
+
         const user = await this.usersRepository.create(createUser)
 
         return user
@@ -34,7 +43,7 @@ export class UsersService {
         return user
     }
 
-    async findByEmail(email: string) {
+    async findByEmail(email: string): Promise<User> {
         const user = await this.usersRepository.findByEmail(email)
 
         Expect.found(user, `User with email ${email} not found`)
@@ -62,7 +71,7 @@ export class UsersService {
         await this.usersRepository.remove(user)
     }
 
-    async validateUser(user: User, password: string) {
+    async validateUser(user: User, password: string): Promise<boolean> {
         return this.hashService.validatePassword(password, user.password)
     }
 }

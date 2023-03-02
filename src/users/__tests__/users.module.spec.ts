@@ -24,17 +24,19 @@ describe('UsersController (e2e)', () => {
         await app.close()
     })
 
+    const createUserDto = {
+        email: 'user@mail.com',
+        username: 'testuser',
+        firstName: 'Test',
+        lastName: 'User',
+        birthdate: new Date(),
+        password: 'password'
+    }
+
     it('/users (POST)', () => {
         return request(server)
             .post('/users')
-            .send({
-                email: 'user@mail.com',
-                username: 'testuser',
-                firstName: 'Test',
-                lastName: 'User',
-                birthdate: new Date(),
-                password: 'password'
-            })
+            .send(createUserDto)
             .expect(201)
             .expect((res) => {
                 expect(res.body.id).toBeDefined()
@@ -42,6 +44,10 @@ describe('UsersController (e2e)', () => {
 
                 userId = res.body.id
             })
+    })
+
+    it('should return 409 if email is already taken', () => {
+        return request(server).post('/users').send(createUserDto).expect(409)
     })
 
     it('/users (GET)', () => {
