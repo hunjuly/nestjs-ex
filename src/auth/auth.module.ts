@@ -12,22 +12,24 @@ import { LocalStrategy } from './local.strategy'
     imports: [
         UsersModule,
         PassportModule,
-        JwtModule.register({
-            secret: jwtConstants.secret,
-            signOptions: { expiresIn: '60s' }
+        JwtModule.registerAsync({
+            useFactory: () => ({
+                secret: jwtConstants.accessSecret,
+                signOptions: {
+                    expiresIn: jwtConstants.accessTokenExpiration
+                }
+            })
+        }),
+        JwtModule.registerAsync({
+            useFactory: () => ({
+                secret: jwtConstants.refreshSecret,
+                signOptions: {
+                    expiresIn: jwtConstants.refreshTokenExpiration
+                }
+            })
         })
     ],
     providers: [AuthService, LocalStrategy, JwtStrategy],
-    controllers: [AuthController],
-    exports: [AuthService]
+    controllers: [AuthController]
 })
 export class AuthModule {}
-
-//         JwtModule.registerAsync({
-//             imports: [ConfigModule],
-//             inject: [ConfigService],
-//             useFactory: (configService: ConfigService) => ({
-//                 secret: configService.get('JWT_SECRET'),
-//                 signOptions: { expiresIn: '1h' }
-//             })
-//         })

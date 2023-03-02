@@ -1,23 +1,45 @@
-import { Injectable } from '@nestjs/common'
+// import { Injectable } from '@nestjs/common'
+// import { PassportStrategy } from '@nestjs/passport'
+// import { ExtractJwt, Strategy } from 'passport-jwt'
+// import { jwtConstants } from './constants'
+// @Injectable()
+// export class JwtStrategy extends PassportStrategy(Strategy) {
+//     constructor() {
+//         super({
+//             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+//             ignoreExpiration: false,
+//             secretOrKey: jwtConstants.accessSecret
+//         })
+//     }
+//     async validate(payload: any) {
+//         return { userId: payload.sub, username: payload.username }
+//     }
+// }
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
+import { UsersService } from '../users/users.service'
 import { jwtConstants } from './constants'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor() {
+    constructor(private usersService: UsersService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: jwtConstants.secret
+            secretOrKey: jwtConstants.accessSecret
         })
     }
 
-    // id: '0c7f0624-c4d8-48c0-b6b5-c349066b25fe',
-    // email: 'test@test.com',
-    // birthdate: 1990-01-01T00:00:00.000Z,
-    // username: 'testUser',
     async validate(payload: any) {
-        return { userId: payload.id, username: payload.username }
+        const { id, email } = payload
+
+        const user = await this.usersService.findById(id)
+
+        if (!user) {
+            throw new UnauthorizedException('Invalid token')
+        }
+
+        return { id, email }
     }
 }
