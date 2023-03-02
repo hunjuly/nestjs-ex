@@ -44,18 +44,18 @@ export class AuthService {
     }
 
     async login(user: any) {
-        const { password, firstName, lastName, ...payload } = user
+        const { id, email } = user
 
-        return this.generateTokens(payload)
+        return this.generateTokens({ id, email })
     }
 
     async refreshTokens(refreshToken: string) {
         try {
             const decoded = jwt.verify(refreshToken, jwtConstants.refreshSecret)
 
-            const { iat, exp, jti, ...payload } = decoded as { [key: string]: any }
+            const { id, email } = decoded as { [key: string]: any }
 
-            return this.generateTokens(payload)
+            return this.generateTokens({ id, email })
         } catch (error) {
             throw new UnauthorizedException()
         }
