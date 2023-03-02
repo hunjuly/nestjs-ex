@@ -25,13 +25,13 @@ LOGIN=$(curl -X POST \
   }')
 
 # Access Token 추출
-ACCESS_TOKEN=$(echo $LOGIN | jq -r '.access_token')
+ACCESS_TOKEN=$(echo $LOGIN | jq -r '.accessToken')
 echo ""
 echo "ACCESS_TOKEN = "
 echo "$ACCESS_TOKEN"
 
 # Refresh Token 추출
-REFRESH_TOKEN=$(echo $LOGIN | jq -r '.refresh_token')
+REFRESH_TOKEN=$(echo $LOGIN | jq -r '.refreshToken')
 echo ""
 echo "REFRESH_TOKEN = "
 echo "$REFRESH_TOKEN"
@@ -60,13 +60,13 @@ echo "REFRESHED = "
 echo "$REFRESHED"
 
 # Access Token 추출
-ACCESS_TOKEN=$(echo $REFRESHED | jq -r '.access_token')
+ACCESS_TOKEN=$(echo $REFRESHED | jq -r '.accessToken')
 echo ""
 echo "ACCESS_TOKEN = "
 echo "$ACCESS_TOKEN"
 
 # Refresh Token 추출
-REFRESH_TOKEN=$(echo $REFRESHED | jq -r '.refresh_token')
+REFRESH_TOKEN=$(echo $REFRESHED | jq -r '.refreshToken')
 echo ""
 echo "REFRESH_TOKEN = "
 echo "$REFRESH_TOKEN"

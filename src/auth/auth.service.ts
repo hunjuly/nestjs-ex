@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt'
 import { v4 as uuidv4 } from 'uuid'
 import { User, UsersService } from 'src/users'
 import { jwtConstants } from './constants'
+import { JwtPayload, TokenPair, TokenPayload } from './interfaces'
 
 @Injectable()
 export class AuthService {
@@ -23,39 +24,37 @@ export class AuthService {
         return null
     }
 
-    private generateTokens(payload: any): { access_token: string; refresh_token: string } {
+    private generateTokens({ userId, email }: TokenPayload): TokenPair {
+        // userId,email 외에 다른 값은 제거한다
+        const payload = { userId, email }
+
         const accessToken = this.jwtService.sign(payload, {
             secret: jwtConstants.accessSecret,
             expiresIn: jwtConstants.accessTokenExpiration
         })
 
         const refreshToken = this.jwtService.sign(
-            { jti: uuidv4(), ...payload },
+            { ...payload, jti: uuidv4() },
             {
                 secret: jwtConstants.refreshSecret,
                 expiresIn: jwtConstants.refreshTokenExpiration
             }
         )
 
-        return {
-            access_token: accessToken,
-            refresh_token: refreshToken
-        }
+        return { accessToken, refreshToken }
     }
 
-    async login(user: any) {
-        const { id, email } = user
+    async login(user: User) {
+        const { id: userId, email } = user
 
-        return this.generateTokens({ id, email })
+        return this.generateTokens({ userId, email })
     }
 
     async refreshTokens(refreshToken: string) {
         try {
             const decoded = jwt.verify(refreshToken, jwtConstants.refreshSecret)
 
-            const { id, email } = decoded as { [key: string]: any }
-
-            return this.generateTokens({ id, email })
+            return this.generateTokens(decoded as JwtPayload)
         } catch (error) {
             throw new UnauthorizedException()
         }
