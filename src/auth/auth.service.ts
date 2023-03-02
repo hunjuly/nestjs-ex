@@ -28,10 +28,13 @@ export class AuthService {
         // userId,email 외에 다른 값은 제거한다
         const payload = { userId, email }
 
-        const accessToken = this.jwtService.sign(payload, {
-            secret: jwtConstants.accessSecret,
-            expiresIn: jwtConstants.accessTokenExpiration
-        })
+        const accessToken = this.jwtService.sign(
+            { ...payload, jti: uuidv4() },
+            {
+                secret: jwtConstants.accessSecret,
+                expiresIn: jwtConstants.accessTokenExpiration
+            }
+        )
 
         const refreshToken = this.jwtService.sign(
             { ...payload, jti: uuidv4() },
