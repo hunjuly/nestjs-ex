@@ -46,6 +46,16 @@ describe('AuthController (e2e)', () => {
         refreshToken = res.body.refreshToken
     })
 
+    it('/auth/login (POST) with incorrect password', async () => {
+        await request(app.getHttpServer())
+            .post('/auth/login')
+            .send({
+                email: 'test@test.com',
+                password: 'wrongpassword'
+            })
+            .expect(401)
+    })
+
     it('/auth/profile (GET)', async () => {
         await request(app.getHttpServer())
             .get('/auth/profile')
@@ -53,9 +63,25 @@ describe('AuthController (e2e)', () => {
             .expect(200)
     })
 
-    it('/auth/refresh-token (POST)', async () => {
+    it('/auth/profile (GET) with invalid access token', async () => {
+        await request(app.getHttpServer())
+            .get('/auth/profile')
+            .set('Authorization', 'Bearer invalid_access_token')
+            .expect(401)
+    })
+
+    it('/auth/refresh (POST) with invalid token', async () => {
         const res = await request(app.getHttpServer())
-            .post('/auth/refresh-token')
+            .post('/auth/refresh')
+            .send({ refreshToken: 'invalid-token' })
+            .expect(401)
+
+        expect(res.body.message).toEqual('Unauthorized')
+    })
+
+    it('/auth/refresh (POST)', async () => {
+        const res = await request(app.getHttpServer())
+            .post('/auth/refresh')
             .send({ refreshToken })
             .expect(201)
 

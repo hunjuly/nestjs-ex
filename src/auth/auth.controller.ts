@@ -18,7 +18,7 @@ export class AuthController {
         return req.user
     }
 
-    @Post('refresh-token')
+    @Post('refresh')
     async refreshToken(@Body('refreshToken') refreshToken: string) {
         const payload = await this.authService.refreshTokens(refreshToken)
 

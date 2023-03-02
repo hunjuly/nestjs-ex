@@ -49,7 +49,7 @@ echo "$PROFILE"
 # 3. Access Token 재발급 요청
 REFRESHED=$(curl -X POST \
     --silent \
-    http://localhost:3000/auth/refresh-token \
+    http://localhost:3000/auth/refresh \
     -H 'Content-Type: application/json' \
     -d '{
     "refreshToken": "'$REFRESH_TOKEN'"
