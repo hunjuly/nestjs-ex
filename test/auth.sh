@@ -14,6 +14,14 @@ SIGNUP=$(curl --location --request POST 'http://localhost:3000/users' \
     "lastName": "testLastName"
 }')
 
+# Response status 확인
+STATUS=$(echo $SIGNUP | jq -r '.statusCode')
+
+if [ 300 -lt $STATUS -a $STATUS != 409 ]; then
+    echo "회원가입 실패"
+    exit 1
+fi
+
 # 1. 로그인
 LOGIN=$(curl -X POST \
     --silent \
@@ -26,15 +34,15 @@ LOGIN=$(curl -X POST \
 
 # Access Token 추출
 ACCESS_TOKEN=$(echo $LOGIN | jq -r '.accessToken')
-echo ""
-echo "ACCESS_TOKEN = "
-echo "$ACCESS_TOKEN"
 
 # Refresh Token 추출
 REFRESH_TOKEN=$(echo $LOGIN | jq -r '.refreshToken')
-echo ""
-echo "REFRESH_TOKEN = "
-echo "$REFRESH_TOKEN"
+
+if [ -z "$ACCESS_TOKEN" ] || [ -z "$REFRESH_TOKEN" ]; then
+    echo $LOGIN
+    echo "Error: login fail."
+    exit 1
+fi
 
 # 2. Access Token을 이용한 profile 요청
 PROFILE=$(curl -X GET \
@@ -42,9 +50,14 @@ PROFILE=$(curl -X GET \
     http://localhost:3000/auth/profile \
     -H "Authorization: Bearer $ACCESS_TOKEN")
 
-echo ""
-echo "profile 1 : "
-echo "$PROFILE"
+USER_ID=$(echo $PROFILE | jq -r '.userId')
+EMAIL=$(echo $LOGIN | jq -r '.email')
+
+if [ -z "$USER_ID" ] || [ -z "$EMAIL" ]; then
+    echo "$PROFILE"
+    echo "Error: USER_ID or EMAIL is null."
+    exit 1
+fi
 
 # 3. Access Token 재발급 요청
 REFRESHED=$(curl -X POST \
@@ -55,21 +68,17 @@ REFRESHED=$(curl -X POST \
     "refreshToken": "'$REFRESH_TOKEN'"
   }')
 
-echo ""
-echo "REFRESHED = "
-echo "$REFRESHED"
-
 # Access Token 추출
 ACCESS_TOKEN=$(echo $REFRESHED | jq -r '.accessToken')
-echo ""
-echo "ACCESS_TOKEN = "
-echo "$ACCESS_TOKEN"
 
 # Refresh Token 추출
 REFRESH_TOKEN=$(echo $REFRESHED | jq -r '.refreshToken')
-echo ""
-echo "REFRESH_TOKEN = "
-echo "$REFRESH_TOKEN"
+
+if [ -z "$ACCESS_TOKEN" ] || [ -z "$REFRESH_TOKEN" ]; then
+    echo $REFRESHED
+    echo "Error: refresh fail."
+    exit 1
+fi
 
 # 4. Access Token을 이용한 profile 요청
 PROFILE=$(curl -X GET \
@@ -77,6 +86,13 @@ PROFILE=$(curl -X GET \
     http://localhost:3000/auth/profile \
     -H "Authorization: Bearer $ACCESS_TOKEN")
 
-echo ""
-echo "profile 2 : "
-echo "$PROFILE"
+USER_ID=$(echo $PROFILE | jq -r '.userId')
+EMAIL=$(echo $LOGIN | jq -r '.email')
+
+if [ -z "$USER_ID" ] || [ -z "$EMAIL" ]; then
+    echo "$PROFILE"
+    echo "Error: USER_ID or EMAIL is null."
+    exit 1
+fi
+
+echo 'AuthModule success'
