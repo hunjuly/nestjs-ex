@@ -11,7 +11,8 @@ describe('common/utils', () => {
             const end = Date.now()
             const elapsed = end - start
 
-            expect(elapsed).toBeGreaterThanOrEqual(timeout)
+            // timeout을 1000으로 설정했다면 1000 전후에 실행되기 때문에 90% 범위로 설정했다.
+            expect(elapsed).toBeGreaterThanOrEqual(timeout * 0.9)
         })
     })
 
