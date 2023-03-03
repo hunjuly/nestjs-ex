@@ -1,5 +1,7 @@
 # Buying Tickets
 
+## Use Case Scenario
+
 https://plantuml.com/ko/sequence-diagram
 
 actor : user
@@ -18,69 +20,43 @@ main flow:
     -   지역을 선택하면 해당하는 극장 전체를 보여준다.
     -   지역은 여러단계로 이루어진다. 극장 목록을 보여주는 것은 마지막 단계다.
 1.  상영 시간을 선택한다.
-    -   매진되어 좌석이 없는 시간은 흐리게 표현한다.
+    -   구매 가능한 좌석이 없는 시간은 흐리게 표현한다.
 1.  좌석을 선택한다.
     -   좌석은 등급과 종류가 있다.(로얄석, 커플석)
     -   좌석을 선택하면 10분 동안 선점 상태가 된다. 결제를 하기 전에 다른 사용자가 티켓을 구매하는 것을 막는다.
 1.  결제한다.
     -   카드결제는 PaymentGateway 서비스를 사용한다.
 1.  완료
-
     -   결제까지 성공하면 구매한 티켓 정보를 보여준다.
 
-### 메소드를 weeklyRanking로 해도 될까?
+exception flow:
 
-이것은 weekly를 속성으로 볼 것인가? 대상으로 볼 것인가?
-여기서는 속성으로 판단했다.
-ranking은 영화 외에도 극장, 연령 등 다양하다.
-ranking('weekly','movie') 이와 같이 확장될 수 있다.
+-   사용자가 회원 가입 및 로그인 상태가 아니라면, 로그인을 하도록 안내한다.
+-   사용자가 선택한 영화가 상영 중이지 않다면, 다른 영화를 선택하도록 안내한다.
+-   선택한 극장에서 해당 상영 시간이 없다면, 다른 시간을 선택하도록 안내한다.
+-   선택한 좌석이 이미 팔린 경우, 다른 좌석을 선택하도록 안내한다.
+-   결제 과정에서 문제가 발생했다면, 사용자에게 에러 메시지를 표시하고 구매를 취소하도록 안내한다.
 
-###
+## Notes
 
-TheatersService는 scheduleRepo을 포함한다.
-`const theaters = schedule.findTheatersByMovie(movieId)` 를 해야 한다.
-
-###
-
-ScheduleService는 TicketsRepo를 포함해야 한다.
-회차 당 남은 티켓수를 보여줘야 한다.
-
-###
-
-TicketsService의 데이터는
-영화수*극장수*좌석수*회차*상영기간
-만큼 생성된다. 엄청나게 많은 데이터다.
-
-###
-
-back <-- orders: 주문 정보(orderId)
-orderId 리턴할 때 포인트/쿠폰 등 결제 관련 정보도 함께 리턴한다.
-PointService, CouponService 로 나눌 것인가?
-둘은 나누는 것이 좋다. 각각은 성격이 다른 entity이다.
-
-###
-
-이벤트인가? 메소드인가?
-티켓이 업데이트 됐다는 정보는 이벤트로 했다. Statistics에서 사용한다.
-PaymentService는 OrderService와 밀접한 관계가 있어서 직접 호출했다.
-그러나 티켓 입장에서는 어떤 서비스에 업데이트 해야 하는지 모른다.
-Order와 Ticket도 밀접한 관계가 있기 때문에 직접 호출했다.
+-   TicketsService의 데이터는 `영화수*극장수*좌석수*회차*상영기간` 만큼 생성된다. 엄청나게 많은 데이터다.
+-   orderId 리턴할 때 포인트/쿠폰 등 결제 관련 정보도 함께 리턴한다. PointService, CouponService 로 나눌 것인가? 둘은 나누는 것이 좋다. 각각은 성격이 다른 entity이다.
+-   이벤트인가? 메소드인가?
+    티켓이 업데이트 됐다는 정보는 이벤트로 했다. Statistics에서 사용한다.
+    PaymentService는 OrderService와 밀접한 관계가 있어서 직접 호출했다.
+    Order와 Ticket도 밀접한 관계가 있기 때문에 직접 호출했다.
 
 ```plantuml
 @startuml
-' skinparam shadowing false
-skinparam defaultFontSize 11
-
 actor user as "User"
 control front as "Front-end"
 boundary back as "Back-end"
-' collections stats as "Statistics" #fff
-collections movies
-collections schedules
-collections theaters
-collections tickets
-collections orders
-collections payments
+database movies
+database schedules
+database theaters
+database tickets
+database orders
+database payments
 
 user -> front: 영화 선택 화면
 front -> back: 상영 중인 영화 목록
@@ -145,7 +121,7 @@ front <-- back: schedules[]
 user -> front: 회차 선택(scheduleId)
 front -> back: 티켓 목록(scheduleId)
 back -> tickets: find(scheduleId & status=sale)
-back <-- tickets: tickets[](좌석 수 만큼 있다)
+back <-- tickets: tickets[]*(좌석 수 만큼 있다)
 note right
 Ticket{
     seatId

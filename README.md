@@ -1,16 +1,18 @@
 ## Description
 
-Describe programming using `nestjs`, `redis`, `grpc`, `typeorm`..
+This document describes programming using nestjs, redis, grpc, and typeorm.
 
 ## PlantUML
 
-문서에 사용된 PlantUML을 사용하기 위해서는 아래처럼 서버를 실행해야 한다.
+To use PlantUML in this document, you need to run the server as follows:
 
+```bash
 docker run -d --network vscode --restart always --name plantuml plantuml/plantuml-server:jetty
+```
 
--   .md에 포함된 UML은 @startuml/@enduml 사이에 커서가 위치해야 프리뷰를 볼 수 있다. 한 번 프리뷰가 설정되면 다른 uml이 선택되기 전까지 유지된다.
--   PlantUml설정은 devContainer에 해야한다.
+-   To preview UML diagrams included in the .md file, place the cursor between @startuml and @enduml. Once the preview is set up, it will persist until a different diagram is selected.
 
+-   PlantUML settings should be set in the devContainer:
     ```
     {
         "plantuml.render": "PlantUMLServer",
@@ -24,7 +26,7 @@ docker run -d --network vscode --restart always --name plantuml plantuml/plantum
 $ npm install
 ```
 
-## Running development environment
+## Running Development Environment
 
 ```bash
 npm start
@@ -33,11 +35,11 @@ npm test
 
 ## Debugging
 
-`npm start`로 실행하면 attach process를 할 수 있다.
+ou can attach a process by running `npm start`.
 
-`unit test`는 vscode의 `code lens` 와 `Jest Runner` extensions이 있으면 'Run|Debug'메뉴가 보인다.
+If you have the `Jest Runner` and `code lens` extensions installed in vscode, you will see the `Run|Debug` menu for `unit tests`.
 
-## Production deploy
+## Production Deployment
 
 ```bash
 # test
@@ -50,18 +52,11 @@ $ npm run build
 $ npm run start:prod
 ```
 
-## Memories
-
--   최초 구현은 controller인가? domain인가?\
-    DDD는 도메인 주도 디자인일 뿐이다. 구현 순서는 다를 수 있다.\
-    항상 실행 가능한 상태를 유지하는 것이 개발에 유리하고 최상위 인터페이스/레이어에서 하향식으로 개발하는 것이 바람직하다.
-
 ## Design
 
--   A simple entity of CRUD uses `Active Record`. Complex entities use the `Data Mapper` style.
--   `src/common` is a common library that can be used in other nestjs projects.
--   Because the DDD uses the 'entity' concept, the `.entity.ts` file created by `nest cli` is changed to `.record.ts` and the class name is also appended with `Record` suffix.\
-    The reason for record is that it is information recorded in DB by typeorm.
+-   The `src/common` library is a common library that can be used in other NestJS projects.
+-   HATEOAS or HAL is implemented in the controller, but it is not implemented here. Supporting full self-descriptives is difficult and complicated. If you really need self-description, you can use GRPC as an alternative.
+
 -   HATEOAS or HAL is implemented in the controller. However, it is not implemented here. Supporting full self descriptives is difficult and complicated. If you really need self description, you can use GRPC as an alternative.
 
     ```sh
@@ -100,5 +95,4 @@ $ npm run start:prod
     }
     ```
 
--   테스트에서 다른 서비스가 아직 구현되지 않았다면 일단 mock으로 작성하고 서비스가 구현되면 대체한다.
-    mock은 건축 과정에서 임시로 설치하는 장치와 같다
+-   For tests, if other services have not yet been implemented, we write them as mockups and replace them when the services are implemented. Mockups are like temporary devices installed during the construction process.

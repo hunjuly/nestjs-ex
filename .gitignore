@@ -5,6 +5,8 @@ desktop.ini
 # compiled output
 /dist
 
+/out
+
 # Logs
 logs
 *.log
