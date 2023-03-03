@@ -3,10 +3,26 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { GlobalModule } from './global'
+import { MoviesModule } from './movies'
+import { OrdersModule } from './orders'
+import { PaymentsModule } from './payments'
+import { SchedulesModule } from './schedules'
+import { TheatersModule } from './theaters'
+import { TicketsModule } from './tickets'
 import { UsersModule } from './users'
 
 @Module({
-    imports: [UsersModule, AuthModule, GlobalModule],
+    imports: [
+        GlobalModule,
+        UsersModule,
+        AuthModule,
+        MoviesModule,
+        OrdersModule,
+        PaymentsModule,
+        SchedulesModule,
+        TheatersModule,
+        TicketsModule
+    ],
     controllers: [AppController],
     providers: [AppService]
 })

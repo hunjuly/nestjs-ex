@@ -13,6 +13,15 @@ export class Seed {
     }
 }
 
+// import { Column, Entity } from 'typeorm'
+// import { BaseRecord } from 'src//common/application'
+
+// @Entity('Seeds')
+// export class SeedRecord extends BaseRecord {
+//     @Column({ unique: true })
+//     name: string
+// }
+
 /*
 uuid는 고유 식별자를 생성하는 방법 중 하나이며, 자동으로 문자열 형태의 값을 생성합니다.
 uuid를 사용하는 것이 데이터베이스의 성능과 관련이 있다면,
