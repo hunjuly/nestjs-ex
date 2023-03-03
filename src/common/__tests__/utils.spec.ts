@@ -1,4 +1,4 @@
-import { generateUUID, sleep, updateIntersection } from '../utils'
+import { convertTimeToSeconds, generateUUID, sleep, updateIntersection } from '../utils'
 
 describe('common/utils', () => {
     describe('sleep', () => {
@@ -57,6 +57,37 @@ describe('common/utils', () => {
             const result = updateIntersection(obj1, obj2)
 
             expect(result).toEqual(obj1)
+        })
+    })
+
+    describe('convertTimeToSeconds', () => {
+        it('should convert 1d to 86400 seconds', () => {
+            const result = convertTimeToSeconds('1d')
+            expect(result).toBe(86400)
+        })
+
+        it('should convert 2h to 7200 seconds', () => {
+            const result = convertTimeToSeconds('2h')
+            expect(result).toBe(7200)
+        })
+
+        it('should convert 30m to 1800 seconds', () => {
+            const result = convertTimeToSeconds('30m')
+            expect(result).toBe(1800)
+        })
+
+        it('should convert 45s to 45 seconds', () => {
+            const result = convertTimeToSeconds('45s')
+            expect(result).toBe(45)
+        })
+
+        it('should convert 1d 2h to 93600 seconds', () => {
+            const result = convertTimeToSeconds('1d 2h')
+            expect(result).toBe(93600)
+        })
+
+        it('should throw an error if the input is invalid', () => {
+            expect(() => convertTimeToSeconds('invalid')).toThrowError('Invalid time string')
         })
     })
 })

@@ -34,3 +34,37 @@ export function updateIntersection<T extends object>(obj1: T, obj2: any): T {
 
     return updatedObject
 }
+
+export function convertTimeToSeconds(timeString: string): number {
+    const matches = timeString.match(/(\d+)\s*(s|m|h|d)?/g)
+
+    if (!matches) {
+        throw new Error('Invalid time string')
+    }
+
+    const times = matches.map((match) => {
+        const [_, value, unit] = match.match(/(\d+)\s*(s|m|h|d)?/)
+        let multiplier = 1
+
+        switch (unit) {
+            case 's':
+                multiplier = 1
+                break
+            case 'm':
+                multiplier = 60
+                break
+            case 'h':
+                multiplier = 3600
+                break
+            case 'd':
+                multiplier = 86400
+                break
+            /* istanbul ignore next */
+            default:
+                break
+        }
+        return parseInt(value) * multiplier
+    })
+
+    return times.reduce((prev, curr) => prev + curr, 0)
+}
