@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
-import { CreateSeedDto, UpdateSeedDto } from './dto'
+import { FindOption } from 'src/common/base'
+import { CreateSeedDto, QueryDto, UpdateSeedDto } from './dto'
 import { SeedsRepository } from './seeds.repository'
 
 @Injectable()
@@ -13,8 +14,8 @@ export class SeedsService {
         return seed
     }
 
-    async findAll() {
-        const seeds = await this.seedsRepository.findAll()
+    async findAll(findOption: FindOption, queryDto: QueryDto) {
+        const seeds = await this.seedsRepository.findAll(findOption, queryDto)
 
         return seeds
     }

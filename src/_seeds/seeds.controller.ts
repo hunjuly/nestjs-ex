@@ -1,7 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
-import { SeedDto } from './dto'
-import { CreateSeedDto } from './dto/create-seed.dto'
-import { UpdateSeedDto } from './dto/update-seed.dto'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import { FindOption, FindQuery } from 'src/common/base'
+import { CreateSeedDto, QueryDto, SeedDto, UpdateSeedDto } from './dto'
 import { SeedsService } from './seeds.service'
 
 @Controller('seeds')
@@ -16,10 +15,12 @@ export class SeedsController {
     }
 
     @Get()
-    async findAll() {
-        const seeds = await this.seedsService.findAll()
+    async findAll(@FindQuery() findOption: FindOption, @Query() query: QueryDto) {
+        const seeds = await this.seedsService.findAll(findOption, query)
 
-        return seeds.map((seed) => new SeedDto(seed))
+        const items = seeds.items.map((seed) => new SeedDto(seed))
+
+        return { ...seeds, items }
     }
 
     @Get(':id')

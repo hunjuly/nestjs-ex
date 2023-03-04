@@ -10,7 +10,6 @@ import { DatabaseModule } from 'src/database/'
             cache: true,
             envFilePath: ['.env']
         })
-    ],
-    exports: [DatabaseModule]
+    ]
 })
 export class GlobalModule {}

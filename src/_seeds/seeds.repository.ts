@@ -1,32 +1,26 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { DataSource, Repository } from 'typeorm'
+import { BaseRepository, FindOption, PaginatedResult } from 'src/common/base'
+import { QueryDto } from './dto'
 import { Seed } from './entities'
 
 @Injectable()
-export class SeedsRepository {
-    constructor(
-        @InjectRepository(Seed)
-        private readonly repository: Repository<Seed>
-    ) {}
-
-    async findAll(): Promise<Seed[]> {
-        return this.repository.find()
+export class SeedsRepository extends BaseRepository<Seed> {
+    constructor(@InjectRepository(Seed) typeorm: Repository<Seed>, protected dataSource: DataSource) {
+        super(typeorm, dataSource)
     }
 
-    async findById(id: string): Promise<Seed> {
-        return this.repository.findOneBy({ id })
-    }
+    async findAll(findOption: FindOption, queryDto: QueryDto): Promise<PaginatedResult<Seed>> {
+        if (queryDto.search) {
+            return this.find(findOption, {
+                where: 'entity.name LIKE :search',
+                params: {
+                    search: `%${queryDto.search}%`
+                }
+            })
+        }
 
-    async create(newSeed: Partial<Seed>): Promise<Seed> {
-        return this.repository.save(newSeed)
-    }
-
-    async save(seed: Seed): Promise<Seed> {
-        return this.repository.save(seed)
-    }
-
-    async remove(seed: Seed): Promise<void> {
-        await this.repository.remove(seed)
+        return this.find(findOption)
     }
 }

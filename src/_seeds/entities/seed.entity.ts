@@ -1,10 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity } from 'typeorm'
+import { AggregateRoot } from 'src/common/base'
 
 @Entity()
-export class Seed {
-    @PrimaryGeneratedColumn('uuid')
-    id: string
-
+export class Seed extends AggregateRoot {
     @Column()
     name: string
 
@@ -12,15 +10,6 @@ export class Seed {
         return this.id + ' ' + this.name
     }
 }
-
-// import { Column, Entity } from 'typeorm'
-// import { BaseRecord } from 'src//common/application'
-
-// @Entity('Seeds')
-// export class SeedRecord extends BaseRecord {
-//     @Column({ unique: true })
-//     name: string
-// }
 
 /*
 uuid는 고유 식별자를 생성하는 방법 중 하나이며, 자동으로 문자열 형태의 값을 생성합니다.

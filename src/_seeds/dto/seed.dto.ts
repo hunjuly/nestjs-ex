@@ -13,7 +13,5 @@ export class SeedDto {
 
         this.id = id
         this.name = name
-
-        // Object.assign(this, seed)
     }
 }
