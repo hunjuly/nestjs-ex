@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
-import { FindOption, FindQuery } from 'src/common/base'
+import { EntityId, FindOption, FindQuery } from 'src/common/base'
 import { CreateScheduleDto, QueryDto, ScheduleDto, UpdateScheduleDto } from './dto'
 import { SchedulesService } from './schedules.service'
 
@@ -24,21 +24,21 @@ export class SchedulesController {
     }
 
     @Get(':id')
-    async findById(@Param('id') id: string) {
+    async findById(@Param('id') id: EntityId) {
         const schedule = await this.schedulesService.findById(id)
 
         return new ScheduleDto(schedule)
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() updateScheduleDto: UpdateScheduleDto) {
+    async update(@Param('id') id: EntityId, @Body() updateScheduleDto: UpdateScheduleDto) {
         const schedule = await this.schedulesService.update(id, updateScheduleDto)
 
         return new ScheduleDto(schedule)
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: string) {
+    async remove(@Param('id') id: EntityId) {
         return this.schedulesService.remove(id)
     }
 }

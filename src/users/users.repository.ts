@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { EntityId } from 'src/common/base'
 import { User } from './entities'
 
 @Injectable()
@@ -14,7 +15,7 @@ export class UsersRepository {
         return this.repository.find()
     }
 
-    async findById(id: string): Promise<User> {
+    async findById(id: EntityId): Promise<User> {
         return this.repository.findOneBy({ id })
     }
 

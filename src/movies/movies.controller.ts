@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
-import { FindOption, FindQuery } from 'src/common/base'
+import { EntityId, FindOption, FindQuery } from 'src/common/base'
 import { CreateMovieDto, MovieDto, QueryDto, UpdateMovieDto } from './dto'
 import { MoviesService } from './movies.service'
 
@@ -24,21 +24,21 @@ export class MoviesController {
     }
 
     @Get(':id')
-    async findById(@Param('id') id: string) {
+    async findById(@Param('id') id: EntityId) {
         const movie = await this.moviesService.findById(id)
 
         return new MovieDto(movie)
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() updateMovieDto: UpdateMovieDto) {
+    async update(@Param('id') id: EntityId, @Body() updateMovieDto: UpdateMovieDto) {
         const movie = await this.moviesService.update(id, updateMovieDto)
 
         return new MovieDto(movie)
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: string) {
+    async remove(@Param('id') id: EntityId) {
         return this.moviesService.remove(id)
     }
 }

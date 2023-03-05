@@ -1,9 +1,10 @@
 import { IsNotEmpty, IsUUID } from 'class-validator'
+import { EntityId } from 'src/common/base'
 import { Schedule } from '../entities'
 
 export class ScheduleDto {
     @IsUUID()
-    id: string
+    id: EntityId
 
     @IsNotEmpty()
     name: string

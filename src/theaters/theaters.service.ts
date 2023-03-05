@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
-import { FindOption } from 'src/common/base'
+import { EntityId, FindOption } from 'src/common/base'
 import { CreateTheaterDto, QueryDto, UpdateTheaterDto } from './dto'
 import { TheatersRepository } from './theaters.repository'
 
@@ -20,7 +20,7 @@ export class TheatersService {
         return theaters
     }
 
-    async findById(id: string) {
+    async findById(id: EntityId) {
         const theater = await this.theatersRepository.findById(id)
 
         Expect.found(theater, `Theater with ID ${id} not found`)
@@ -28,7 +28,7 @@ export class TheatersService {
         return theater
     }
 
-    async update(id: string, updateTheaterDto: UpdateTheaterDto) {
+    async update(id: EntityId, updateTheaterDto: UpdateTheaterDto) {
         const theater = await this.theatersRepository.findById(id)
 
         Expect.found(theater, `Theater with ID ${id} not found`)
@@ -40,7 +40,7 @@ export class TheatersService {
         return savedTheater
     }
 
-    async remove(id: string) {
+    async remove(id: EntityId) {
         const theater = await this.theatersRepository.findById(id)
 
         Expect.found(theater, `Theater with ID ${id} not found`)

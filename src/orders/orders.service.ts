@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
-import { FindOption } from 'src/common/base'
+import { EntityId, FindOption } from 'src/common/base'
 import { CreateOrderDto, QueryDto, UpdateOrderDto } from './dto'
 import { OrdersRepository } from './orders.repository'
 
@@ -20,7 +20,7 @@ export class OrdersService {
         return orders
     }
 
-    async findById(id: string) {
+    async findById(id: EntityId) {
         const order = await this.ordersRepository.findById(id)
 
         Expect.found(order, `Order with ID ${id} not found`)
@@ -28,7 +28,7 @@ export class OrdersService {
         return order
     }
 
-    async update(id: string, updateOrderDto: UpdateOrderDto) {
+    async update(id: EntityId, updateOrderDto: UpdateOrderDto) {
         const order = await this.ordersRepository.findById(id)
 
         Expect.found(order, `Order with ID ${id} not found`)
@@ -40,7 +40,7 @@ export class OrdersService {
         return savedOrder
     }
 
-    async remove(id: string) {
+    async remove(id: EntityId) {
         const order = await this.ordersRepository.findById(id)
 
         Expect.found(order, `Order with ID ${id} not found`)

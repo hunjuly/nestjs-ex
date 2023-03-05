@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
+import { EntityId } from 'src/common/base'
 import { UserDto } from './dto'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -22,19 +23,19 @@ export class UsersController {
     }
 
     @Get(':id')
-    async findById(@Param('id') id: string) {
+    async findById(@Param('id') id: EntityId) {
         const user = await this.usersService.findById(id)
         return new UserDto(user)
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    async update(@Param('id') id: EntityId, @Body() updateUserDto: UpdateUserDto) {
         const user = await this.usersService.update(id, updateUserDto)
         return new UserDto(user)
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: string) {
+    async remove(@Param('id') id: EntityId) {
         return this.usersService.remove(id)
     }
 }

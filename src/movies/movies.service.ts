@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
-import { FindOption } from 'src/common/base'
+import { EntityId, FindOption } from 'src/common/base'
 import { CreateMovieDto, QueryDto, UpdateMovieDto } from './dto'
 import { MoviesRepository } from './movies.repository'
 
@@ -20,7 +20,7 @@ export class MoviesService {
         return movies
     }
 
-    async findById(id: string) {
+    async findById(id: EntityId) {
         const movie = await this.moviesRepository.findById(id)
 
         Expect.found(movie, `Movie with ID ${id} not found`)
@@ -28,7 +28,7 @@ export class MoviesService {
         return movie
     }
 
-    async update(id: string, updateMovieDto: UpdateMovieDto) {
+    async update(id: EntityId, updateMovieDto: UpdateMovieDto) {
         const movie = await this.moviesRepository.findById(id)
 
         Expect.found(movie, `Movie with ID ${id} not found`)
@@ -40,7 +40,7 @@ export class MoviesService {
         return savedMovie
     }
 
-    async remove(id: string) {
+    async remove(id: EntityId) {
         const movie = await this.moviesRepository.findById(id)
 
         Expect.found(movie, `Movie with ID ${id} not found`)

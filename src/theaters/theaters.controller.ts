@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
-import { FindOption, FindQuery } from 'src/common/base'
+import { EntityId, FindOption, FindQuery } from 'src/common/base'
 import { CreateTheaterDto, QueryDto, TheaterDto, UpdateTheaterDto } from './dto'
 import { TheatersService } from './theaters.service'
 
@@ -24,21 +24,21 @@ export class TheatersController {
     }
 
     @Get(':id')
-    async findById(@Param('id') id: string) {
+    async findById(@Param('id') id: EntityId) {
         const theater = await this.theatersService.findById(id)
 
         return new TheaterDto(theater)
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() updateTheaterDto: UpdateTheaterDto) {
+    async update(@Param('id') id: EntityId, @Body() updateTheaterDto: UpdateTheaterDto) {
         const theater = await this.theatersService.update(id, updateTheaterDto)
 
         return new TheaterDto(theater)
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: string) {
+    async remove(@Param('id') id: EntityId) {
         return this.theatersService.remove(id)
     }
 }

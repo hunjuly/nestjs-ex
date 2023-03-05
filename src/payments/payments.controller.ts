@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
-import { FindOption, FindQuery } from 'src/common/base'
+import { EntityId, FindOption, FindQuery } from 'src/common/base'
 import { CreatePaymentDto, PaymentDto, QueryDto, UpdatePaymentDto } from './dto'
 import { PaymentsService } from './payments.service'
 
@@ -24,21 +24,21 @@ export class PaymentsController {
     }
 
     @Get(':id')
-    async findById(@Param('id') id: string) {
+    async findById(@Param('id') id: EntityId) {
         const payment = await this.paymentsService.findById(id)
 
         return new PaymentDto(payment)
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
+    async update(@Param('id') id: EntityId, @Body() updatePaymentDto: UpdatePaymentDto) {
         const payment = await this.paymentsService.update(id, updatePaymentDto)
 
         return new PaymentDto(payment)
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: string) {
+    async remove(@Param('id') id: EntityId) {
         return this.paymentsService.remove(id)
     }
 }

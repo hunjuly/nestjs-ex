@@ -1,9 +1,10 @@
 import { IsNotEmpty, IsUUID } from 'class-validator'
+import { EntityId } from 'src/common/base'
 import { Payment } from '../entities'
 
 export class PaymentDto {
     @IsUUID()
-    id: string
+    id: EntityId
 
     @IsNotEmpty()
     name: string

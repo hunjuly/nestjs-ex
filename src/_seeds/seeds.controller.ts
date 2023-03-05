@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
-import { FindOption, FindQuery } from 'src/common/base'
+import { EntityId, FindOption, FindQuery } from 'src/common/base'
 import { CreateSeedDto, QueryDto, SeedDto, UpdateSeedDto } from './dto'
 import { SeedsService } from './seeds.service'
 
@@ -24,21 +24,21 @@ export class SeedsController {
     }
 
     @Get(':id')
-    async findById(@Param('id') id: string) {
+    async findById(@Param('id') id: EntityId) {
         const seed = await this.seedsService.findById(id)
 
         return new SeedDto(seed)
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() updateSeedDto: UpdateSeedDto) {
+    async update(@Param('id') id: EntityId, @Body() updateSeedDto: UpdateSeedDto) {
         const seed = await this.seedsService.update(id, updateSeedDto)
 
         return new SeedDto(seed)
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: string) {
+    async remove(@Param('id') id: EntityId) {
         return this.seedsService.remove(id)
     }
 }

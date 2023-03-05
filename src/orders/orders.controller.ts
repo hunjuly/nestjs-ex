@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
-import { FindOption, FindQuery } from 'src/common/base'
+import { EntityId, FindOption, FindQuery } from 'src/common/base'
 import { CreateOrderDto, OrderDto, QueryDto, UpdateOrderDto } from './dto'
 import { OrdersService } from './orders.service'
 
@@ -24,21 +24,21 @@ export class OrdersController {
     }
 
     @Get(':id')
-    async findById(@Param('id') id: string) {
+    async findById(@Param('id') id: EntityId) {
         const order = await this.ordersService.findById(id)
 
         return new OrderDto(order)
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+    async update(@Param('id') id: EntityId, @Body() updateOrderDto: UpdateOrderDto) {
         const order = await this.ordersService.update(id, updateOrderDto)
 
         return new OrderDto(order)
     }
 
     @Delete(':id')
-    async remove(@Param('id') id: string) {
+    async remove(@Param('id') id: EntityId) {
         return this.ordersService.remove(id)
     }
 }

@@ -1,9 +1,10 @@
 import { IsDateString, IsEmail, IsString, IsUUID } from 'class-validator'
+import { EntityId } from 'src/common/base'
 import { User } from '../entities'
 
 export class UserDto {
     @IsUUID()
-    id: string
+    id: EntityId
 
     @IsEmail()
     email: string

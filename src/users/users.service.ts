@@ -1,5 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common'
 import { Expect, HashService, updateIntersection } from 'src/common'
+import { EntityId } from 'src/common/base'
 import { CreateUserDto, UpdateUserDto } from './dto'
 import { User } from './entities'
 import { UsersRepository } from './users.repository'
@@ -35,7 +36,7 @@ export class UsersService {
         return users
     }
 
-    async findById(id: string) {
+    async findById(id: EntityId) {
         const user = await this.usersRepository.findById(id)
 
         Expect.found(user, `User with ID ${id} not found`)
@@ -51,7 +52,7 @@ export class UsersService {
         return user
     }
 
-    async update(id: string, updateUserDto: UpdateUserDto) {
+    async update(id: EntityId, updateUserDto: UpdateUserDto) {
         const user = await this.usersRepository.findById(id)
 
         Expect.found(user, `User with ID ${id} not found`)
@@ -63,7 +64,7 @@ export class UsersService {
         return savedUser
     }
 
-    async remove(id: string) {
+    async remove(id: EntityId) {
         const user = await this.usersRepository.findById(id)
 
         Expect.found(user, `User with ID ${id} not found`)

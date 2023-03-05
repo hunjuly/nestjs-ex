@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
-import { FindOption } from 'src/common/base'
+import { EntityId, FindOption } from 'src/common/base'
 import { CreatePaymentDto, QueryDto, UpdatePaymentDto } from './dto'
 import { PaymentsRepository } from './payments.repository'
 
@@ -20,7 +20,7 @@ export class PaymentsService {
         return payments
     }
 
-    async findById(id: string) {
+    async findById(id: EntityId) {
         const payment = await this.paymentsRepository.findById(id)
 
         Expect.found(payment, `Payment with ID ${id} not found`)
@@ -28,7 +28,7 @@ export class PaymentsService {
         return payment
     }
 
-    async update(id: string, updatePaymentDto: UpdatePaymentDto) {
+    async update(id: EntityId, updatePaymentDto: UpdatePaymentDto) {
         const payment = await this.paymentsRepository.findById(id)
 
         Expect.found(payment, `Payment with ID ${id} not found`)
@@ -40,7 +40,7 @@ export class PaymentsService {
         return savedPayment
     }
 
-    async remove(id: string) {
+    async remove(id: EntityId) {
         const payment = await this.paymentsRepository.findById(id)
 
         Expect.found(payment, `Payment with ID ${id} not found`)

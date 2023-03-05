@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
-import { FindOption } from 'src/common/base'
+import { EntityId, FindOption } from 'src/common/base'
 import { CreateSeedDto, QueryDto, UpdateSeedDto } from './dto'
 import { SeedsRepository } from './seeds.repository'
 
@@ -20,7 +20,7 @@ export class SeedsService {
         return seeds
     }
 
-    async findById(id: string) {
+    async findById(id: EntityId) {
         const seed = await this.seedsRepository.findById(id)
 
         Expect.found(seed, `Seed with ID ${id} not found`)
@@ -28,7 +28,7 @@ export class SeedsService {
         return seed
     }
 
-    async update(id: string, updateSeedDto: UpdateSeedDto) {
+    async update(id: EntityId, updateSeedDto: UpdateSeedDto) {
         const seed = await this.seedsRepository.findById(id)
 
         Expect.found(seed, `Seed with ID ${id} not found`)
@@ -40,7 +40,7 @@ export class SeedsService {
         return savedSeed
     }
 
-    async remove(id: string) {
+    async remove(id: EntityId) {
         const seed = await this.seedsRepository.findById(id)
 
         Expect.found(seed, `Seed with ID ${id} not found`)

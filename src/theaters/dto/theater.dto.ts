@@ -1,9 +1,10 @@
 import { IsNotEmpty, IsUUID } from 'class-validator'
+import { EntityId } from 'src/common/base'
 import { Theater } from '../entities'
 
 export class TheaterDto {
     @IsUUID()
-    id: string
+    id: EntityId
 
     @IsNotEmpty()
     name: string
