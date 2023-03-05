@@ -3,6 +3,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { v4 as uuidv4 } from 'uuid'
 import { convertTimeToSeconds } from 'src/common'
+import { EntityId } from 'src/common/base'
 import { JwtConfigService } from 'src/config'
 import { RedisService } from 'src/global'
 import { User, UsersService } from 'src/users'
@@ -90,13 +91,13 @@ export class AuthService {
         }
     }
 
-    private async storeRefreshToken(userId: string, refreshToken: string) {
+    private async storeRefreshToken(userId: EntityId, refreshToken: string) {
         const expireTime = convertTimeToSeconds(this.config.refreshTokenExpiration)
 
         await this.redis.set(`refreshToken:${userId}`, refreshToken, expireTime)
     }
 
-    private async getRefreshToken(userId: string): Promise<string> {
+    private async getRefreshToken(userId: EntityId): Promise<string> {
         return await this.redis.get(`refreshToken:${userId}`)
     }
 }

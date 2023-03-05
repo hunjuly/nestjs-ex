@@ -1,13 +1,14 @@
 import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
+import { EntityId } from 'src/common/base'
 import { GlobalModule } from 'src/global'
 import { UsersModule } from '../users.module'
 
 describe('UsersController (e2e)', () => {
     let app: INestApplication
     let server
-    let userId: string
+    let userId: EntityId
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({

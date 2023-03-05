@@ -1,4 +1,6 @@
+import { EntityId } from 'src/common/base'
+
 export interface TokenPayload {
-    userId: string
+    userId: EntityId
     email: string
 }
