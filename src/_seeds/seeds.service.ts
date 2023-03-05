@@ -14,7 +14,7 @@ export class SeedsService {
         return seed
     }
 
-    async findAll(findOption: FindOption, queryDto: QueryDto) {
+    async findAll(findOption: FindOption, queryDto?: QueryDto) {
         const seeds = await this.seedsRepository.findAll(findOption, queryDto)
 
         return seeds

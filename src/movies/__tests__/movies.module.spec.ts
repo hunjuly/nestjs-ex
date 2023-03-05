@@ -2,16 +2,16 @@ import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { DatabaseModule } from 'src/database'
-import { SeedsModule } from '../seeds.module'
+import { MoviesModule } from '../movies.module'
 
-describe('SeedsModule', () => {
+describe('MoviesModule', () => {
     let app: INestApplication
     let server
-    let seedId: string
+    let movieId: string
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
-            imports: [DatabaseModule, SeedsModule]
+            imports: [DatabaseModule, MoviesModule]
         }).compile()
 
         app = module.createNestApplication()
@@ -24,50 +24,49 @@ describe('SeedsModule', () => {
         await app.close()
     })
 
-    describe('POST /seeds', () => {
-        it('creates a new seed', () => {
+    describe('POST /movies', () => {
+        it('creates a new movie', () => {
             return request(server)
-                .post('/seeds')
+                .post('/movies')
                 .send({
-                    name: 'Seed 1'
+                    name: 'Movie 1'
                 })
                 .expect(201)
                 .expect((res) => {
                     expect(res.body.id).toBeDefined()
-                    expect(res.body.name).toEqual('Seed 1')
+                    expect(res.body.name).toEqual('Movie 1')
 
-                    seedId = res.body.id
+                    movieId = res.body.id
                 })
         })
     })
 
-    describe('/seeds (GET)', () => {
-        // curl -X GET "http://localhost:3000/seeds?orderBy=name&order=DESC&limit=1&offset=0&search=Seed%201" -H "accept: application/json"
-        it('returns seeds with query options', async () => {
+    describe('/movies (GET)', () => {
+        it('returns movies with query options', async () => {
             const queryDto = {
                 order: 'name:desc',
                 limit: 1,
                 offset: 0,
-                search: 'Seed 1'
+                search: 'Movie 1'
             }
 
             return request(server)
-                .get('/seeds')
+                .get('/movies')
                 .query(queryDto)
                 .expect(200)
                 .expect((res) => {
                     expect(Array.isArray(res.body.items)).toBeTruthy()
                     expect(res.body.items.length).toBe(1)
-                    expect(res.body.items[0].name).toBe('Seed 1')
+                    expect(res.body.items[0].name).toBe('Movie 1')
                     expect(typeof res.body.offset).toBe('number')
                     expect(typeof res.body.limit).toBe('number')
                     expect(typeof res.body.total).toBe('number')
                 })
         })
 
-        it('returns seeds with default options', async () => {
+        it('returns movies with default options', async () => {
             return request(server)
-                .get('/seeds')
+                .get('/movies')
                 .expect(200)
                 .expect((res) => {
                     expect(Array.isArray(res.body.items)).toBeTruthy()
@@ -79,53 +78,53 @@ describe('SeedsModule', () => {
         })
     })
 
-    describe('GET /seeds/:id', () => {
-        it('returns the seed with the given id', () => {
+    describe('GET /movies/:id', () => {
+        it('returns the movie with the given id', () => {
             return request(server)
-                .get(`/seeds/${seedId}`)
+                .get(`/movies/${movieId}`)
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.id).toEqual(seedId)
+                    expect(res.body.id).toEqual(movieId)
                     expect(res.body.name).toBeDefined()
                 })
         })
 
-        it('returns a 404 error when the seed is not found', () => {
-            return request(server).get('/seeds/999').expect(404)
+        it('returns a 404 error when the movie is not found', () => {
+            return request(server).get('/movies/999').expect(404)
         })
     })
 
-    describe('PATCH /seeds/:id', () => {
-        it('updates the seed with the given id', () => {
+    describe('PATCH /movies/:id', () => {
+        it('updates the movie with the given id', () => {
             return request(server)
-                .patch(`/seeds/${seedId}`)
+                .patch(`/movies/${movieId}`)
                 .send({
-                    name: 'Updated Seed'
+                    name: 'Updated Movie'
                 })
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.id).toEqual(seedId)
-                    expect(res.body.name).toEqual('Updated Seed')
+                    expect(res.body.id).toEqual(movieId)
+                    expect(res.body.name).toEqual('Updated Movie')
                 })
         })
 
-        it('returns a 404 error when the seed is not found', () => {
+        it('returns a 404 error when the movie is not found', () => {
             return request(server)
-                .patch('/seeds/999')
+                .patch('/movies/999')
                 .send({
-                    name: 'Updated Seed'
+                    name: 'Updated Movie'
                 })
                 .expect(404)
         })
     })
 
-    describe('DELETE /seeds/:id', () => {
-        it('deletes the seed with the given id', () => {
-            return request(server).delete(`/seeds/${seedId}`).expect(200)
+    describe('DELETE /movies/:id', () => {
+        it('deletes the movie with the given id', () => {
+            return request(server).delete(`/movies/${movieId}`).expect(200)
         })
 
-        it('returns a 404 error when the seed is not found', () => {
-            return request(server).delete('/seeds/999').expect(404)
+        it('returns a 404 error when the movie is not found', () => {
+            return request(server).delete('/movies/999').expect(404)
         })
     })
 })

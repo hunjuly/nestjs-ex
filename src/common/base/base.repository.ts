@@ -63,7 +63,7 @@ export abstract class BaseRepository<Entity extends BaseEntity> {
         qb.offset(option.offset)
 
         if (option.order) {
-            const order = option.order?.direction.toLowerCase() === 'desc' ? 'DESC' : 'ASC'
+            const order = option.order.direction.toLowerCase() === 'desc' ? 'DESC' : 'ASC'
 
             qb.orderBy(option.order.name, order)
         }

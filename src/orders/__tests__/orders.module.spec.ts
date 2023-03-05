@@ -2,16 +2,16 @@ import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { DatabaseModule } from 'src/database'
-import { SeedsModule } from '../seeds.module'
+import { OrdersModule } from '../orders.module'
 
-describe('SeedsModule', () => {
+describe('OrdersModule', () => {
     let app: INestApplication
     let server
-    let seedId: string
+    let orderId: string
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
-            imports: [DatabaseModule, SeedsModule]
+            imports: [DatabaseModule, OrdersModule]
         }).compile()
 
         app = module.createNestApplication()
@@ -24,50 +24,49 @@ describe('SeedsModule', () => {
         await app.close()
     })
 
-    describe('POST /seeds', () => {
-        it('creates a new seed', () => {
+    describe('POST /orders', () => {
+        it('creates a new order', () => {
             return request(server)
-                .post('/seeds')
+                .post('/orders')
                 .send({
-                    name: 'Seed 1'
+                    name: 'Order 1'
                 })
                 .expect(201)
                 .expect((res) => {
                     expect(res.body.id).toBeDefined()
-                    expect(res.body.name).toEqual('Seed 1')
+                    expect(res.body.name).toEqual('Order 1')
 
-                    seedId = res.body.id
+                    orderId = res.body.id
                 })
         })
     })
 
-    describe('/seeds (GET)', () => {
-        // curl -X GET "http://localhost:3000/seeds?orderBy=name&order=DESC&limit=1&offset=0&search=Seed%201" -H "accept: application/json"
-        it('returns seeds with query options', async () => {
+    describe('/orders (GET)', () => {
+        it('returns orders with query options', async () => {
             const queryDto = {
                 order: 'name:desc',
                 limit: 1,
                 offset: 0,
-                search: 'Seed 1'
+                search: 'Order 1'
             }
 
             return request(server)
-                .get('/seeds')
+                .get('/orders')
                 .query(queryDto)
                 .expect(200)
                 .expect((res) => {
                     expect(Array.isArray(res.body.items)).toBeTruthy()
                     expect(res.body.items.length).toBe(1)
-                    expect(res.body.items[0].name).toBe('Seed 1')
+                    expect(res.body.items[0].name).toBe('Order 1')
                     expect(typeof res.body.offset).toBe('number')
                     expect(typeof res.body.limit).toBe('number')
                     expect(typeof res.body.total).toBe('number')
                 })
         })
 
-        it('returns seeds with default options', async () => {
+        it('returns orders with default options', async () => {
             return request(server)
-                .get('/seeds')
+                .get('/orders')
                 .expect(200)
                 .expect((res) => {
                     expect(Array.isArray(res.body.items)).toBeTruthy()
@@ -79,53 +78,53 @@ describe('SeedsModule', () => {
         })
     })
 
-    describe('GET /seeds/:id', () => {
-        it('returns the seed with the given id', () => {
+    describe('GET /orders/:id', () => {
+        it('returns the order with the given id', () => {
             return request(server)
-                .get(`/seeds/${seedId}`)
+                .get(`/orders/${orderId}`)
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.id).toEqual(seedId)
+                    expect(res.body.id).toEqual(orderId)
                     expect(res.body.name).toBeDefined()
                 })
         })
 
-        it('returns a 404 error when the seed is not found', () => {
-            return request(server).get('/seeds/999').expect(404)
+        it('returns a 404 error when the order is not found', () => {
+            return request(server).get('/orders/999').expect(404)
         })
     })
 
-    describe('PATCH /seeds/:id', () => {
-        it('updates the seed with the given id', () => {
+    describe('PATCH /orders/:id', () => {
+        it('updates the order with the given id', () => {
             return request(server)
-                .patch(`/seeds/${seedId}`)
+                .patch(`/orders/${orderId}`)
                 .send({
-                    name: 'Updated Seed'
+                    name: 'Updated Order'
                 })
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.id).toEqual(seedId)
-                    expect(res.body.name).toEqual('Updated Seed')
+                    expect(res.body.id).toEqual(orderId)
+                    expect(res.body.name).toEqual('Updated Order')
                 })
         })
 
-        it('returns a 404 error when the seed is not found', () => {
+        it('returns a 404 error when the order is not found', () => {
             return request(server)
-                .patch('/seeds/999')
+                .patch('/orders/999')
                 .send({
-                    name: 'Updated Seed'
+                    name: 'Updated Order'
                 })
                 .expect(404)
         })
     })
 
-    describe('DELETE /seeds/:id', () => {
-        it('deletes the seed with the given id', () => {
-            return request(server).delete(`/seeds/${seedId}`).expect(200)
+    describe('DELETE /orders/:id', () => {
+        it('deletes the order with the given id', () => {
+            return request(server).delete(`/orders/${orderId}`).expect(200)
         })
 
-        it('returns a 404 error when the seed is not found', () => {
-            return request(server).delete('/seeds/999').expect(404)
+        it('returns a 404 error when the order is not found', () => {
+            return request(server).delete('/orders/999').expect(404)
         })
     })
 })

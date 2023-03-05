@@ -2,16 +2,16 @@ import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { DatabaseModule } from 'src/database'
-import { SeedsModule } from '../seeds.module'
+import { SchedulesModule } from '../schedules.module'
 
-describe('SeedsModule', () => {
+describe('SchedulesModule', () => {
     let app: INestApplication
     let server
-    let seedId: string
+    let scheduleId: string
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
-            imports: [DatabaseModule, SeedsModule]
+            imports: [DatabaseModule, SchedulesModule]
         }).compile()
 
         app = module.createNestApplication()
@@ -24,50 +24,49 @@ describe('SeedsModule', () => {
         await app.close()
     })
 
-    describe('POST /seeds', () => {
-        it('creates a new seed', () => {
+    describe('POST /schedules', () => {
+        it('creates a new schedule', () => {
             return request(server)
-                .post('/seeds')
+                .post('/schedules')
                 .send({
-                    name: 'Seed 1'
+                    name: 'Schedule 1'
                 })
                 .expect(201)
                 .expect((res) => {
                     expect(res.body.id).toBeDefined()
-                    expect(res.body.name).toEqual('Seed 1')
+                    expect(res.body.name).toEqual('Schedule 1')
 
-                    seedId = res.body.id
+                    scheduleId = res.body.id
                 })
         })
     })
 
-    describe('/seeds (GET)', () => {
-        // curl -X GET "http://localhost:3000/seeds?orderBy=name&order=DESC&limit=1&offset=0&search=Seed%201" -H "accept: application/json"
-        it('returns seeds with query options', async () => {
+    describe('/schedules (GET)', () => {
+        it('returns schedules with query options', async () => {
             const queryDto = {
                 order: 'name:desc',
                 limit: 1,
                 offset: 0,
-                search: 'Seed 1'
+                search: 'Schedule 1'
             }
 
             return request(server)
-                .get('/seeds')
+                .get('/schedules')
                 .query(queryDto)
                 .expect(200)
                 .expect((res) => {
                     expect(Array.isArray(res.body.items)).toBeTruthy()
                     expect(res.body.items.length).toBe(1)
-                    expect(res.body.items[0].name).toBe('Seed 1')
+                    expect(res.body.items[0].name).toBe('Schedule 1')
                     expect(typeof res.body.offset).toBe('number')
                     expect(typeof res.body.limit).toBe('number')
                     expect(typeof res.body.total).toBe('number')
                 })
         })
 
-        it('returns seeds with default options', async () => {
+        it('returns schedules with default options', async () => {
             return request(server)
-                .get('/seeds')
+                .get('/schedules')
                 .expect(200)
                 .expect((res) => {
                     expect(Array.isArray(res.body.items)).toBeTruthy()
@@ -79,53 +78,53 @@ describe('SeedsModule', () => {
         })
     })
 
-    describe('GET /seeds/:id', () => {
-        it('returns the seed with the given id', () => {
+    describe('GET /schedules/:id', () => {
+        it('returns the schedule with the given id', () => {
             return request(server)
-                .get(`/seeds/${seedId}`)
+                .get(`/schedules/${scheduleId}`)
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.id).toEqual(seedId)
+                    expect(res.body.id).toEqual(scheduleId)
                     expect(res.body.name).toBeDefined()
                 })
         })
 
-        it('returns a 404 error when the seed is not found', () => {
-            return request(server).get('/seeds/999').expect(404)
+        it('returns a 404 error when the schedule is not found', () => {
+            return request(server).get('/schedules/999').expect(404)
         })
     })
 
-    describe('PATCH /seeds/:id', () => {
-        it('updates the seed with the given id', () => {
+    describe('PATCH /schedules/:id', () => {
+        it('updates the schedule with the given id', () => {
             return request(server)
-                .patch(`/seeds/${seedId}`)
+                .patch(`/schedules/${scheduleId}`)
                 .send({
-                    name: 'Updated Seed'
+                    name: 'Updated Schedule'
                 })
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.id).toEqual(seedId)
-                    expect(res.body.name).toEqual('Updated Seed')
+                    expect(res.body.id).toEqual(scheduleId)
+                    expect(res.body.name).toEqual('Updated Schedule')
                 })
         })
 
-        it('returns a 404 error when the seed is not found', () => {
+        it('returns a 404 error when the schedule is not found', () => {
             return request(server)
-                .patch('/seeds/999')
+                .patch('/schedules/999')
                 .send({
-                    name: 'Updated Seed'
+                    name: 'Updated Schedule'
                 })
                 .expect(404)
         })
     })
 
-    describe('DELETE /seeds/:id', () => {
-        it('deletes the seed with the given id', () => {
-            return request(server).delete(`/seeds/${seedId}`).expect(200)
+    describe('DELETE /schedules/:id', () => {
+        it('deletes the schedule with the given id', () => {
+            return request(server).delete(`/schedules/${scheduleId}`).expect(200)
         })
 
-        it('returns a 404 error when the seed is not found', () => {
-            return request(server).delete('/seeds/999').expect(404)
+        it('returns a 404 error when the schedule is not found', () => {
+            return request(server).delete('/schedules/999').expect(404)
         })
     })
 })
