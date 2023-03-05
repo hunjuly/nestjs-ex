@@ -1,7 +1,7 @@
 import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { DatabaseModule } from 'src/database'
+import { GlobalModule } from 'src/global'
 import { SeedsModule } from '../seeds.module'
 
 describe('SeedsModule', () => {
@@ -11,7 +11,7 @@ describe('SeedsModule', () => {
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
-            imports: [DatabaseModule, SeedsModule]
+            imports: [GlobalModule, SeedsModule]
         }).compile()
 
         app = module.createNestApplication()
@@ -38,6 +38,10 @@ describe('SeedsModule', () => {
 
                     seedId = res.body.id
                 })
+        })
+
+        it('returns 400(Bad request) when name is missing', () => {
+            return request(server).post('/seeds').send({}).expect(400)
         })
     })
 

@@ -1,7 +1,7 @@
 import * as request from 'supertest'
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
-import { DatabaseModule } from 'src/database'
+import { GlobalModule } from 'src/global'
 import { OrdersModule } from '../orders.module'
 
 describe('OrdersModule', () => {
@@ -11,7 +11,7 @@ describe('OrdersModule', () => {
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
-            imports: [DatabaseModule, OrdersModule]
+            imports: [GlobalModule, OrdersModule]
         }).compile()
 
         app = module.createNestApplication()
