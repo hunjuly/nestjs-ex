@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { DataSource, Repository } from 'typeorm'
 import { BaseRepository, FindOption, PaginatedResult } from 'src/common/base'
-import { QueryDto } from './dto'
 import { Movie } from './entities'
 
 @Injectable()
@@ -11,16 +10,7 @@ export class MoviesRepository extends BaseRepository<Movie> {
         super(typeorm, dataSource)
     }
 
-    async findAll(findOption: FindOption, queryDto: QueryDto): Promise<PaginatedResult<Movie>> {
-        if (queryDto.search) {
-            return this.find(findOption, {
-                where: 'entity.name LIKE :search',
-                params: {
-                    search: `%${queryDto.search}%`
-                }
-            })
-        }
-
+    async findAll(findOption: FindOption): Promise<PaginatedResult<Movie>> {
         return this.find(findOption)
     }
 }

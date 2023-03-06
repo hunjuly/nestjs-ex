@@ -1,16 +1,17 @@
 import { IsNotEmpty, IsUUID } from 'class-validator'
 import { EntityId } from 'src/common/base'
-import { Movie } from '../entities'
+import { Seed } from '../entities'
 
-export class MovieDto {
+// 클라이언트로부터 전달되는 데이터의 유효성을 검증
+export class SeedResponseDto {
     @IsUUID()
     id: EntityId
 
     @IsNotEmpty()
     name: string
 
-    constructor(movie: Movie) {
-        const { id, name } = movie
+    constructor(seed: Seed) {
+        const { id, name } = seed
 
         this.id = id
         this.name = name

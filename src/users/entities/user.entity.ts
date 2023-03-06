@@ -1,12 +1,9 @@
 import { Exclude } from 'class-transformer'
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
-import { EntityId } from 'src/common/base'
+import { Column, Entity } from 'typeorm'
+import { AggregateRoot } from 'src/common/base'
 
 @Entity()
-export class User {
-    @PrimaryGeneratedColumn('uuid')
-    id: EntityId
-
+export class User extends AggregateRoot {
     @Column({ unique: true })
     email: string
 

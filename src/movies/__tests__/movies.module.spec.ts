@@ -1,13 +1,15 @@
 import * as request from 'supertest'
-import { INestApplication } from '@nestjs/common'
+import { HttpStatus, INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { GlobalModule } from 'src/global'
+import { CreateMovieDto } from '../dto'
+import { Genre, Rated } from '../entities'
 import { MoviesModule } from '../movies.module'
 
 describe('MoviesModule', () => {
     let app: INestApplication
     let server
-    let movieId: string
+    let createdMovieId: string
 
     beforeAll(async () => {
         const module = await Test.createTestingModule({
@@ -25,19 +27,34 @@ describe('MoviesModule', () => {
     })
 
     describe('POST /movies', () => {
-        it('creates a new movie', () => {
-            return request(server)
-                .post('/movies')
-                .send({
-                    name: 'Movie 1'
-                })
-                .expect(201)
-                .expect((res) => {
-                    expect(res.body.id).toBeDefined()
-                    expect(res.body.name).toEqual('Movie 1')
+        it('creates a new movie', async () => {
+            const releaseDate = new Date('1994-09-22T00:00:00.000Z')
+            console.log(releaseDate.toDateString())
+            const movieDto = {
+                title: 'The Shawshank Redemption',
+                plot: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
+                runningTimeInMinutes: 142,
+                director: 'Frank Darabont',
+                rated: 'R',
+                genres: ['drama'],
+                releaseDate: '1994-09-22T00:00:00.000Z'
+            }
 
-                    movieId = res.body.id
-                })
+            //const response = await request(server).post('/movies').send(movieDto).expect(HttpStatus.CREATED)
+            const response = await request(server).post('/movies').send(movieDto)
+            const movie = response.body
+            console.log(response.body)
+            expect(movie).toBeDefined()
+            expect(movie.id).toBeDefined()
+            expect(movie.title).toBe(movieDto.title)
+            expect(movie.plot).toBe(movieDto.plot)
+            expect(movie.runningTimeInMinutes).toBe(movieDto.runningTimeInMinutes)
+            expect(movie.director).toBe(movieDto.director)
+            expect(movie.rated).toBe(movieDto.rated)
+            expect(movie.genres).toEqual(movieDto.genres)
+            expect(new Date(movie.releaseDate)).toEqual(movieDto.releaseDate)
+
+            createdMovieId = movie.id
         })
     })
 
@@ -81,10 +98,10 @@ describe('MoviesModule', () => {
     describe('GET /movies/:id', () => {
         it('returns the movie with the given id', () => {
             return request(server)
-                .get(`/movies/${movieId}`)
+                .get(`/movies/${createdMovieId}`)
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.id).toEqual(movieId)
+                    expect(res.body.id).toEqual(createdMovieId)
                     expect(res.body.name).toBeDefined()
                 })
         })
@@ -97,13 +114,13 @@ describe('MoviesModule', () => {
     describe('PATCH /movies/:id', () => {
         it('updates the movie with the given id', () => {
             return request(server)
-                .patch(`/movies/${movieId}`)
+                .patch(`/movies/${createdMovieId}`)
                 .send({
                     name: 'Updated Movie'
                 })
                 .expect(200)
                 .expect((res) => {
-                    expect(res.body.id).toEqual(movieId)
+                    expect(res.body.id).toEqual(createdMovieId)
                     expect(res.body.name).toEqual('Updated Movie')
                 })
         })
@@ -120,7 +137,7 @@ describe('MoviesModule', () => {
 
     describe('DELETE /movies/:id', () => {
         it('deletes the movie with the given id', () => {
-            return request(server).delete(`/movies/${movieId}`).expect(200)
+            return request(server).delete(`/movies/${createdMovieId}`).expect(200)
         })
 
         it('returns a 404 error when the movie is not found', () => {

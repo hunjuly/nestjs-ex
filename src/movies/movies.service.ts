@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Expect, updateIntersection } from 'src/common'
 import { EntityId, FindOption } from 'src/common/base'
-import { CreateMovieDto, QueryDto, UpdateMovieDto } from './dto'
+import { CreateMovieDto, UpdateMovieDto } from './dto'
 import { MoviesRepository } from './movies.repository'
 
 @Injectable()
@@ -14,8 +14,8 @@ export class MoviesService {
         return movie
     }
 
-    async findAll(findOption: FindOption, queryDto?: QueryDto) {
-        const movies = await this.moviesRepository.findAll(findOption, queryDto)
+    async findAll(findOption: FindOption) {
+        const movies = await this.moviesRepository.findAll(findOption)
 
         return movies
     }

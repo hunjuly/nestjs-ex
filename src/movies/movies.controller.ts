@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { EntityId, FindOption, FindQuery } from 'src/common/base'
-import { CreateMovieDto, MovieDto, QueryDto, UpdateMovieDto } from './dto'
+import { CreateMovieDto, MovieResponseDto, UpdateMovieDto } from './dto'
 import { MoviesService } from './movies.service'
 
 @Controller('movies')
@@ -11,14 +11,14 @@ export class MoviesController {
     async create(@Body() createMovieDto: CreateMovieDto) {
         const movie = await this.moviesService.create(createMovieDto)
 
-        return new MovieDto(movie)
+        return new MovieResponseDto(movie)
     }
 
     @Get()
-    async findAll(@FindQuery() findOption: FindOption, @Query() query: QueryDto) {
-        const movies = await this.moviesService.findAll(findOption, query)
+    async findAll(@FindQuery() findOption: FindOption) {
+        const movies = await this.moviesService.findAll(findOption)
 
-        const items = movies.items.map((movie) => new MovieDto(movie))
+        const items = movies.items.map((movie) => new MovieResponseDto(movie))
 
         return { ...movies, items }
     }
@@ -27,14 +27,14 @@ export class MoviesController {
     async findById(@Param('id') id: EntityId) {
         const movie = await this.moviesService.findById(id)
 
-        return new MovieDto(movie)
+        return new MovieResponseDto(movie)
     }
 
     @Patch(':id')
     async update(@Param('id') id: EntityId, @Body() updateMovieDto: UpdateMovieDto) {
         const movie = await this.moviesService.update(id, updateMovieDto)
 
-        return new MovieDto(movie)
+        return new MovieResponseDto(movie)
     }
 
     @Delete(':id')

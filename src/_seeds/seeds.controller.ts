@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { EntityId, FindOption, FindQuery } from 'src/common/base'
-import { CreateSeedDto, QueryDto, SeedDto, UpdateSeedDto } from './dto'
+import { CreateSeedDto, QueryDto, SeedResponseDto, UpdateSeedDto } from './dto'
 import { SeedsService } from './seeds.service'
 
 @Controller('seeds')
@@ -11,14 +11,14 @@ export class SeedsController {
     async create(@Body() createSeedDto: CreateSeedDto) {
         const seed = await this.seedsService.create(createSeedDto)
 
-        return new SeedDto(seed)
+        return new SeedResponseDto(seed)
     }
 
     @Get()
     async findAll(@FindQuery() findOption: FindOption, @Query() query: QueryDto) {
         const seeds = await this.seedsService.findAll(findOption, query)
 
-        const items = seeds.items.map((seed) => new SeedDto(seed))
+        const items = seeds.items.map((seed) => new SeedResponseDto(seed))
 
         return { ...seeds, items }
     }
@@ -27,14 +27,14 @@ export class SeedsController {
     async findById(@Param('id') id: EntityId) {
         const seed = await this.seedsService.findById(id)
 
-        return new SeedDto(seed)
+        return new SeedResponseDto(seed)
     }
 
     @Patch(':id')
     async update(@Param('id') id: EntityId, @Body() updateSeedDto: UpdateSeedDto) {
         const seed = await this.seedsService.update(id, updateSeedDto)
 
-        return new SeedDto(seed)
+        return new SeedResponseDto(seed)
     }
 
     @Delete(':id')
