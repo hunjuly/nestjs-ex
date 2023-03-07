@@ -7,9 +7,11 @@
     "license": "UNLICENSED",
     "scripts": {
         "build": "nest build",
+        "build:docker": "docker build -t nestjs-ex:1.0 .",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start --debug --watch",
         "start:prod": "node dist/main",
+        "docker:run": "docker run -d -p 3000:3000 --name nestjs nestjs-ex:1.0",
         "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
         "test": "jest --watch --onlyChanged",
         "test:all": "jest --coverage"
