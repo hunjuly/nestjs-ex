@@ -2,8 +2,6 @@ import * as request from 'supertest'
 import { HttpStatus, INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { GlobalModule } from 'src/global'
-import { CreateMovieDto } from '../dto'
-import { Genre, Rated } from '../entities'
 import { MoviesModule } from '../movies.module'
 
 describe('MoviesModule', () => {
@@ -28,8 +26,6 @@ describe('MoviesModule', () => {
 
     describe('POST /movies', () => {
         it('creates a new movie', async () => {
-            const releaseDate = new Date('1994-09-22T00:00:00.000Z')
-            console.log(releaseDate.toDateString())
             const movieDto = {
                 title: 'The Shawshank Redemption',
                 plot: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
@@ -37,13 +33,12 @@ describe('MoviesModule', () => {
                 director: 'Frank Darabont',
                 rated: 'R',
                 genres: ['drama'],
-                releaseDate: '1994-09-22T00:00:00.000Z'
+                releaseDate: new Date('1994-09-22')
             }
 
-            //const response = await request(server).post('/movies').send(movieDto).expect(HttpStatus.CREATED)
-            const response = await request(server).post('/movies').send(movieDto)
+            const response = await request(server).post('/movies').send(movieDto).expect(HttpStatus.CREATED)
             const movie = response.body
-            console.log(response.body)
+
             expect(movie).toBeDefined()
             expect(movie.id).toBeDefined()
             expect(movie.title).toBe(movieDto.title)
@@ -52,7 +47,7 @@ describe('MoviesModule', () => {
             expect(movie.director).toBe(movieDto.director)
             expect(movie.rated).toBe(movieDto.rated)
             expect(movie.genres).toEqual(movieDto.genres)
-            expect(new Date(movie.releaseDate)).toEqual(movieDto.releaseDate)
+            expect(new Date(movie.releaseDate)).toEqual(new Date(movieDto.releaseDate))
 
             createdMovieId = movie.id
         })
@@ -61,10 +56,10 @@ describe('MoviesModule', () => {
     describe('/movies (GET)', () => {
         it('returns movies with query options', async () => {
             const queryDto = {
-                order: 'name:desc',
+                order: 'title:desc',
                 limit: 1,
                 offset: 0,
-                search: 'Movie 1'
+                search: 'Redemption'
             }
 
             return request(server)
@@ -74,7 +69,7 @@ describe('MoviesModule', () => {
                 .expect((res) => {
                     expect(Array.isArray(res.body.items)).toBeTruthy()
                     expect(res.body.items.length).toBe(1)
-                    expect(res.body.items[0].name).toBe('Movie 1')
+                    expect(res.body.items[0].title).toBe('The Shawshank Redemption')
                     expect(typeof res.body.offset).toBe('number')
                     expect(typeof res.body.limit).toBe('number')
                     expect(typeof res.body.total).toBe('number')
@@ -102,7 +97,7 @@ describe('MoviesModule', () => {
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.id).toEqual(createdMovieId)
-                    expect(res.body.name).toBeDefined()
+                    expect(res.body.title).toBeDefined()
                 })
         })
 
@@ -116,12 +111,12 @@ describe('MoviesModule', () => {
             return request(server)
                 .patch(`/movies/${createdMovieId}`)
                 .send({
-                    name: 'Updated Movie'
+                    title: 'Updated Movie'
                 })
                 .expect(200)
                 .expect((res) => {
                     expect(res.body.id).toEqual(createdMovieId)
-                    expect(res.body.name).toEqual('Updated Movie')
+                    expect(res.body.title).toEqual('Updated Movie')
                 })
         })
 
@@ -129,7 +124,7 @@ describe('MoviesModule', () => {
             return request(server)
                 .patch('/movies/999')
                 .send({
-                    name: 'Updated Movie'
+                    title: 'Updated Movie'
                 })
                 .expect(404)
         })
@@ -145,3 +140,5 @@ describe('MoviesModule', () => {
         })
     })
 })
+
+// curl -X POST http://localhost:3000/movies -H 'Content-Type: application/json' -d '{ "title": "The Shawshank Redemption", "plot": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.", "runningTimeInMinutes": 142, "director": "Frank Darabont", "rated": "R", "genres": ["drama"], "releaseDate": "1994-09-22T00:00:00.000Z" }'

@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer'
 import { IsArray, IsDate, IsEnum, IsInt, IsNotEmpty, IsString, MaxLength } from 'class-validator'
 import { Genre, Rated } from '../entities'
 
@@ -32,5 +33,6 @@ export class CreateMovieDto {
 
     @IsNotEmpty()
     @IsDate()
+    @Type(() => Date)
     releaseDate: Date
 }

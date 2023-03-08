@@ -8,7 +8,7 @@ import { DatabaseModule } from 'src/database/'
     providers: [
         {
             provide: APP_PIPE,
-            useClass: ValidationPipe
+            useFactory: () => new ValidationPipe({})
         }
     ]
 })

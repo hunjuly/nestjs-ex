@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
 import { EntityId, FindOption, FindQuery } from 'src/common/base'
 import { CreateMovieDto, MovieResponseDto, UpdateMovieDto } from './dto'
 import { MoviesService } from './movies.service'
