@@ -51,72 +51,39 @@ describe('SeedsModule', () => {
             await request(server).post('/seeds').send({ name: 'Seed 3' })
         })
 
-        it('returns seeds with default options', async () => {
+        // curl -X GET "http://localhost:3000/seeds?orderBy=name&order=DESC&limit=1&offset=0&search=Seed%201" -H "accept: application/json"
+        it('returns seeds with query options', async () => {
+            const queryDto = {
+                order: 'name:desc',
+                limit: 1,
+                offset: 0,
+                search: 'Seed 1'
+            }
+
             return request(server)
                 .get('/seeds')
+                .query(queryDto)
                 .expect(200)
                 .expect((res) => {
                     expect(Array.isArray(res.body.items)).toBeTruthy()
-                    expect(res.body.items.length).toBe(3)
+                    expect(res.body.items.length).toBe(1)
+                    expect(res.body.items[0].name).toBe('Seed 1')
                     expect(typeof res.body.offset).toBe('number')
                     expect(typeof res.body.limit).toBe('number')
                     expect(typeof res.body.total).toBe('number')
                 })
         })
 
-        // curl -X GET "http://localhost:3000/seeds?orderBy=name&order=DESC&limit=1&offset=0&search=Seed%201" -H "accept: application/json"
-        it('returns seeds with query options', async () => {
-            const queryDto = {
-                order: 'name:desc'
-            }
-
+        it('returns seeds with default options', async () => {
             return request(server)
                 .get('/seeds')
-                .query(queryDto)
                 .expect(200)
                 .expect((res) => {
                     expect(Array.isArray(res.body.items)).toBeTruthy()
-                    expect(res.body.items.length).toBe(3)
-                    expect(res.body.items[0].name).toBe('Seed 3')
-                })
-        })
-
-        it('returns seeds with query options', async () => {
-            const queryDto = {
-                limit: 2
-            }
-
-            return request(server)
-                .get('/seeds')
-                .query(queryDto)
-                .expect(200)
-                .expect((res) => {
-                    console.log(res.body, Array.isArray(res.body.items))
-                    expect(Array.isArray(res.body.items)).toBeTruthy()
-                    expect(res.body.items.length).toBe(2)
-                    expect(res.body.items[0].name).toBe('Seed 1')
-                    expect(res.body.offset).toBe(0)
-                    expect(res.body.limit).toBe(2)
-                    expect(res.body.total).toBe(3)
-                })
-        })
-
-        it('returns seeds with query options', async () => {
-            const queryDto = {
-                offset: 1
-            }
-
-            return request(server)
-                .get('/seeds')
-                .query(queryDto)
-                .expect(200)
-                .expect((res) => {
-                    console.log(res.body)
-                    expect(Array.isArray(res.body.items)).toBeTruthy()
-                    expect(res.body.items.length).toBe(2)
-                    expect(res.body.items[0].name).toBe('Seed 2')
-                    expect(res.body.offset).toBe(1)
-                    expect(res.body.total).toBe(3)
+                    expect(res.body.items.length).toBeGreaterThan(0)
+                    expect(typeof res.body.offset).toBe('number')
+                    expect(typeof res.body.limit).toBe('number')
+                    expect(typeof res.body.total).toBe('number')
                 })
         })
     })

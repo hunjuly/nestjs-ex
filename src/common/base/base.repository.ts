@@ -1,9 +1,9 @@
 import { DataSource, DeepPartial, FindOptionsWhere, ObjectLiteral, QueryRunner, Repository } from 'typeorm'
-import { BaseEntity } from './base.entity'
+import { AggregateRoot } from './aggregate-root'
 import { FindOption, PaginatedResult } from './find-option'
 import { EntityId } from './types'
 
-export abstract class BaseRepository<Entity extends BaseEntity> {
+export abstract class BaseRepository<Entity extends AggregateRoot> {
     constructor(protected typeorm: Repository<Entity>, protected dataSource: DataSource) {}
 
     async startTransaction() {

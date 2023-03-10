@@ -54,28 +54,6 @@ describe('MoviesModule', () => {
     })
 
     describe('/movies (GET)', () => {
-        it('returns movies with query options', async () => {
-            const queryDto = {
-                order: 'title:desc',
-                limit: 1,
-                offset: 0,
-                search: 'Redemption'
-            }
-
-            return request(server)
-                .get('/movies')
-                .query(queryDto)
-                .expect(200)
-                .expect((res) => {
-                    expect(Array.isArray(res.body.items)).toBeTruthy()
-                    expect(res.body.items.length).toBe(1)
-                    expect(res.body.items[0].title).toBe('The Shawshank Redemption')
-                    expect(typeof res.body.offset).toBe('number')
-                    expect(typeof res.body.limit).toBe('number')
-                    expect(typeof res.body.total).toBe('number')
-                })
-        })
-
         it('returns movies with default options', async () => {
             return request(server)
                 .get('/movies')

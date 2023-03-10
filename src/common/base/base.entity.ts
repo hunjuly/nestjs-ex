@@ -4,8 +4,8 @@ import { EntityId } from './types'
 // @Entity() 안 해도 되려나?
 @Entity()
 export abstract class BaseEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: EntityId
+    @PrimaryGeneratedColumn()
+    id: number
 
     @CreateDateColumn()
     createdAt: Date
