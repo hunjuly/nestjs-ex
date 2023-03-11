@@ -44,8 +44,6 @@ describe('UsersService', () => {
             birthdate: new Date('1990-01-01')
         }
 
-        const user: User = { ...createDto, id: '123' }
-
         it('should return a user by email', async () => {
             await service.create(createDto)
 
@@ -57,7 +55,7 @@ describe('UsersService', () => {
         it('should return a user when email and password are valid', async () => {
             await service.create(createDto)
 
-            const valid = await service.validateUser(user, password)
+            const valid = await service.validateUser(password, 'hashedPassword')
 
             expect(valid).toBeTruthy()
         })

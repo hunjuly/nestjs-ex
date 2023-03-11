@@ -72,7 +72,7 @@ export class UsersService {
         await this.usersRepository.remove(user)
     }
 
-    async validateUser(user: User, password: string): Promise<boolean> {
-        return this.hashService.validatePassword(password, user.password)
+    async validateUser(plainPassword: string, hashedPassword: string): Promise<boolean> {
+        return this.hashService.validatePassword(plainPassword, hashedPassword)
     }
 }

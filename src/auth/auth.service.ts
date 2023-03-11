@@ -22,7 +22,7 @@ export class AuthService {
         const user = await this.usersService.findByEmail(email)
 
         if (user) {
-            const valid = await this.usersService.validateUser(user, password)
+            const valid = await this.usersService.validateUser(password, user.password)
 
             if (valid) {
                 return user
